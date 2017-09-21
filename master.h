@@ -157,37 +157,33 @@ template <typename T> void Master<T>::testfunc() {
 
 template <typename T> bool Master<T>::Eval() 
 {
-	double th;
 	S = 0.;
-	int Nnbr;
+	int Nth = 0;
 	int totalOverlap = 0;
 	// Iterate over cellmap
 	for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
 		totalOverlap += (!BoundaryClear(it->second));
-		th = 0;
-		Nnbr = 0;
 		int idx = it->second->cellIdx;
 		for (cellmapIterator nbr=cellmap.equal_range(idx).first;
 				 nbr!=cellmap.equal_range(idx).second; nbr++) {
 			if (nbr->second->ID == it->second->ID) continue;
 			totalOverlap += isOverlap(it->second, nbr->second);
-			th += cos(2.*(it->second->angle - nbr->second->angle));
-			Nnbr++;
+			S += cos(2.*(it->second->angle - nbr->second->angle));
+			Nth++;
 		}
 		for (int n : it->second->neighborCells) {
 			if (n!=-1) {
 				for (cellmapIterator nbr=cellmap.equal_range(n).first;
 						 nbr != cellmap.equal_range(n).second; nbr++) {
 					totalOverlap += isOverlap(it->second, nbr->second);
-					th += cos(2.*(it->second->angle - nbr->second->angle));
-					Nnbr++;
+					S += cos(2.*(it->second->angle - nbr->second->angle));
+					Nth++;
 				}
 			}
 		}
-		S += th/Nnbr;
 	}
 
-	S /= nObj;
+	S /= Nth;
 
 	if (!noOverlap) cout << S << " " << totalOverlap << endl;
 	return (totalOverlap == 0);
