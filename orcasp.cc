@@ -14,11 +14,11 @@ void setparams(Params & mypars)
 	mypars.cellNx = 5;
 	mypars.cellNy = 5; // keep in mind we want square cells
 	mypars.AR = 1;
-	mypars.length = 3.0;
+	mypars.length = 3.0/4.0;
 	mypars.sweepEval = 50;
-	mypars.sweepLimit = 5000;
-	mypars.nProc = 1e5;
-	mypars.sweepEvalProc = mypars.nProc/50;
+	mypars.sweepLimit = 2000;
+	mypars.nProc = 1e2;
+	mypars.sweepEvalProc = mypars.nProc/20;
 	mypars.maxAttempts = 1;
 	mypars.boxEdge = 20.0;
 	mypars.transFactor = 0.04;

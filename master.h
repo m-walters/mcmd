@@ -104,15 +104,16 @@ public:
 			}
 		} else {
 			if (sweepCount%sweepEvalProc == 0) {
-				cout << "Failure rate: " << nFailure/double(stepsInSweep) << endl;
 				Eval();
 				WriteSweep();
-				cout << "S " << S << endl;
+				cout << "Sweep " << sweepCount << ", S " << S << ", failure rate: " 
+						 << nFailure/double(stepsInSweep) << endl;
 			}
 		}
 			
 		if (finalSweep) {
 			WriteSweep();
+			WritePixelImg();
 		}
 	}
 
@@ -133,6 +134,7 @@ private:
 	void RandRotate(Obj<T> *);
 	void GhostStep(const Obj<T> *);
 	void WriteSweep();
+	void WritePixelImg();
 	int CountOverlap(Obj<T> *);
 	int CountOverlapDB(Obj<T> *);
 
@@ -158,7 +160,6 @@ template <typename T> void Master<T>::testfunc() {
 template <typename T> bool Master<T>::Eval() 
 {
 	S = 0.;
-	double SS = 0.;
 	int Nth = 0;
 	int totalOverlap = 0;
 	// Iterate over cellmap
@@ -170,29 +171,22 @@ template <typename T> bool Master<T>::Eval()
 		for (cellmapIterator nbr=cellmap.equal_range(idx).first;
 				 nbr!=cellmap.equal_range(idx).second; nbr++) {
 			if (nbr->second->ID == it->second->ID) continue;
-			SS = (it->second->angle - nbr->second->angle);
-		//	cout << Nth << " " << nbr->second->cellIdx << " "
-			//		 << nbr->second->angle << " " << SS << endl;
 			totalOverlap += isOverlap(it->second, nbr->second);
-			S += cos(2.*M_PI*2.*SS);
+			S += cos(2.*(it->second->angle - nbr->second->angle));
 			Nth++;
 		}
-		if(1) {
 		for (int n : it->second->neighborCells) {
 			if (n!=-1) {
 				for (cellmapIterator nbr=cellmap.equal_range(n).first;
 						 nbr != cellmap.equal_range(n).second; nbr++) {
-					SS = cos(2.*(it->second->angle - nbr->second->angle));
-			//		cout << Nth << " " << nbr->second->cellIdx << " "
-				//			 << nbr->second->angle << " " << SS << endl;
 					totalOverlap += isOverlap(it->second, nbr->second);
-					S += cos(2.*M_PI*2.*(it->second->angle - nbr->second->angle));
-					Nth++;
+					if(0){
+						S += cos(2.*(it->second->angle - nbr->second->angle));
+						Nth++;
+					}
 				}
 			}
 		}
-		}
-		//cout << S << " " << Nth << " " << S/Nth <<  endl;
 	}
 
 	S /= Nth;
@@ -357,17 +351,16 @@ template <> void Master<Rod>::InitMap()
 			c.set_values(nx*dr, ny*dr);
 			c = c+shift;
 			r->rc = c;
-			r->vert[0].set_values(c.x, c.y + length*cellWidth/2.);
-			r->vert[1].set_values(c.x, c.y - length*cellWidth/2.);
+			r->vert[0].set_values(c.x, c.y + length*0.5);
+			r->vert[1].set_values(c.x, c.y - length*0.5);
 			r->angle = 0.;
 			UpdateCellIdx(r);
 			UpdateCellNeighbors(r);
-			if (0) {
-				// Random dist
-				th = distribution(generator);
-				th *= M_PI;
-			}
 			if (1) {
+				// Random dist
+				th = M_PI*(2.*distribution(generator) - 1.);
+			}
+			if (0) {
 				// Generating X configuration
 				x = c.x;
 				y = c.y;
@@ -380,7 +373,7 @@ template <> void Master<Rod>::InitMap()
 			r->RotateVerts(th);
 			r->angle = th;
 			ghost->Copy(*r);
-			if (1) {
+			if (0) {
 				if (!BoundaryClear(ghost)) {
 					n+=1;
 					continue;
@@ -412,7 +405,7 @@ template <> void Master<Rod>::InitMap()
 					if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
 				}
 			}
-			if (0) {
+			if (1) {
 				// Rand config
 				while (!BoundaryClear(ghost)) {
 					ghost->Copy(*r);
@@ -499,9 +492,9 @@ template <typename T> void Master<T>::UpdateCellNeighbors(Obj<T> *p) {
 
 template <typename T> void Master<T>::RandRotate(Obj<T> *p) {
 	normal_distribution<double> distribution(0,1.0);
-	double dt = distribution(generator);
-	dt *= angMag*M_PI;
+	double dt = angMag*M_PI*(2.*distribution(generator) - 1.);
 	p->RotateVerts(dt);
+	p->angle += dt;
 }
 
 
@@ -573,5 +566,79 @@ template <typename T> void Master<T>::WriteSweep() {
 	fout.close();
 };
 	
+
+template <typename T> void Master<T>::WritePixelImg() {
+	// Write the pixelized image for input to CNN
+	if ((Nx % cellNx != 0) || (Ny % cellNy != 0)) {
+		// pixels will straddle cell borders
+		cout << "Pixels straddle cell border, please revise for pixelwrite" << endl;
+		return;
+	}
+	double avgTh[Nx][Ny] = {};
+	double S[Nx][Ny] = {};
+
+	// Allocate rods to pixels
+	// Find the key that each pixel belongs to
+	// Allocate nthetas equivalent to nrods in key
+	int x,y,xCell,yCell;
+	double dpx = dr;
+	double dpy = dr;
+	int key;
+	int npxPerCell = (int) cellWidth / dpx;
+	int npyPerCell = (int) cellWidth / dpy;
+	int nthtmp[Nx][Ny] = {};
+	for (int px=0; px<Nx; px++) {
+		for (int py=0; py<Ny; py++) {
+			x = (int) (floor(Nx * (px*dpx + dpx/2) / box.x));
+			y = (int) (floor(Ny * (py*dpy + dpy/2) / box.y));
+			xCell = (int) px / npxPerCell;
+			yCell = (int) py / npyPerCell;
+			key = xCell*cellNy + yCell;
+			int nrod = cellmap.count(key);
+			double thetas[nrod] = {};
+			int nth = 0;
+			// Iterate over the cell
+			for (cellmapIterator it = cellmap.equal_range(key).first;
+					 it != cellmap.equal_range(key).second; it++) {
+				double rx = it->second->rc.x + 0.5*box.x;
+				double ry = it->second->rc.y + 0.5*box.y;
+				if ((fabs(rx - x) < dpx/2) &&
+						(fabs(ry - y) < dpy/2)) {
+					thetas[nth] = it->second->angle;
+					nth++;
+					avgTh[px][py] += it->second->angle;
+				}
+			}
+			if (nth < 2) {
+				S[px][py] = 1.;
+			} else {
+				avgTh[px][py] /= nth;
+
+				// Calculate S
+				int nS = 0;
+				for (int i=nth-1; i>0; i--) {
+					for (int j=0; j<i; j++) {
+						nS++;
+						S[px][py] += cos(2.*(thetas[i] - thetas[j]));
+					}
+				}
+				S[px][py] /= nS;
+			}
+		}
+	}
+
+
+	fout.open("output/pixelImg", ios::out | ios::trunc);
+	for (int x=0; x<Nx; x++) {
+		for (int y=0; y<Ny; y++) {
+			fout << x << " " << y << " " << avgTh[x][y] << " " << S[x][y] << " " << nthtmp[x][y] << endl;
+		}
+	}
+		
+}
+
+
+
+
 
 #endif
