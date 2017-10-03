@@ -310,7 +310,6 @@ template <typename T> void Master<T>::Sweep()
 				continue;
 			}
 			int post = CountOverlap(ghost);
-
 			if (post <= pre) {
 				// Commit ghost step
 				if (ghost->cellIdx == copy->cellIdx) {
@@ -491,7 +490,9 @@ template <typename T> void Master<T>::UpdateCellNeighbors(Obj<T> *p) {
 
 
 template <typename T> void Master<T>::RandRotate(Obj<T> *p) {
-	normal_distribution<double> distribution(0,1.0);
+	uniform_real_distribution<double> distribution(0,1.0);
+	//normal_distribution<double> distribution(0,1.0);
+	//double dt = angMag*M_PI*distribution(generator);
 	double dt = angMag*M_PI*(2.*distribution(generator) - 1.);
 	p->RotateVerts(dt);
 	p->angle += dt;
@@ -544,9 +545,9 @@ template <typename T> void Master<T>::WriteSweep() {
 	}
 	sID.append(to_string(sweepCount));
 	if (finalSweep) {
-		fout.open("output/finalsweep_"+sID, ios::out | ios::trunc);
+		fout.open("output2/finalsweep_"+sID, ios::out | ios::trunc);
 	} else {
-		fout.open("output/sweep_"+sID, ios::out | ios::trunc);
+		fout.open("output2/sweep_"+sID, ios::out | ios::trunc);
 	}
 
 	for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
