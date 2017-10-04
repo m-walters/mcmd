@@ -164,8 +164,6 @@ template <typename T> bool Master<T>::Eval()
 	int totalOverlap = 0;
 	// Iterate over cellmap
 	for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
-		S = 0.;
-		Nth = 0;
 		totalOverlap += (!BoundaryClear(it->second));
 		int idx = it->second->cellIdx;
 		for (cellmapIterator nbr=cellmap.equal_range(idx).first;
@@ -187,6 +185,7 @@ template <typename T> bool Master<T>::Eval()
 				}
 			}
 		}
+		//if (it->second->ID == 1) cout << "----------------------" << endl;
 	}
 
 	S /= Nth;
@@ -545,9 +544,9 @@ template <typename T> void Master<T>::WriteSweep() {
 	}
 	sID.append(to_string(sweepCount));
 	if (finalSweep) {
-		fout.open("output2/finalsweep_"+sID, ios::out | ios::trunc);
+		fout.open("output/finalsweep_"+sID, ios::out | ios::trunc);
 	} else {
-		fout.open("output2/sweep_"+sID, ios::out | ios::trunc);
+		fout.open("output/sweep_"+sID, ios::out | ios::trunc);
 	}
 
 	for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {

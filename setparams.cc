@@ -17,8 +17,8 @@ void setparams(Params & mypars)
 	mypars.length = 3.0;
 	mypars.sweepEval = 50;
 	mypars.sweepLimit = 5000;
-	mypars.nProc = 1e5;
-	mypars.sweepEvalProc = mypars.nProc/500;
+	mypars.nProc = 5e4;
+	mypars.sweepEvalProc = mypars.nProc/100;
 	mypars.maxAttempts = 1;
 	mypars.boxEdge = 20.0;
 	mypars.transFactor = 0.04;
