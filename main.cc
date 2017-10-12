@@ -3,21 +3,21 @@
 #include <fstream>
 
 using namespace chrono;
-void readin(Params & mypars);
-void setparams(Params & mypars);
+//void setparams(Params & mypars);
 
 int main(int argc, const char *argv[])
 {     
 
 	typedef high_resolution_clock myclock;
-	Params simparams;
+	cout << "OK" << endl;
+	Params *simparams = new Params();
 
-	setparams(simparams);
-	simparams.printParams();
+	//setparams(simparams);
+	simparams->printParams();
 	Master<Rod> master(simparams);
 	master.InitializeSim();
 	int sweep = 1;
-	for (; sweep <= simparams.sweepLimit; sweep++) {
+	for (; sweep <= simparams->sweepLimit; sweep++) {
 		if (!master.noOverlap)
 			master.MCSweep();
 		else {
@@ -29,10 +29,10 @@ int main(int argc, const char *argv[])
 	if (master.noOverlap) {
 		// Processing sweeps
 		cout << "Beginning processing run at sweep " << sweep << endl
-				 << "Performing " << simparams.nProc << " more sweeps..." << endl;
-		for (int i=1; i<simparams.nProc; i++) {
+				 << "Performing " << simparams->nProc << " more sweeps..." << endl;
+		for (int i=1; i<simparams->nProc; i++) {
 			master.MCSweep();
-			if (i%simparams.sweepEvalProc==0) {
+			if (i%simparams->sweepEvalProc==0) {
 				if (argc == 2) {
 					master.WriteSweep(to_string(*argv[1]), "");
 				} else if (argc == 3) {

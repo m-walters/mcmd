@@ -1,16 +1,12 @@
 #include "Vec2D.h"
 #include "params.h"
+#include "config_main.h"
 
 void setparams(Params & mypars)
 {
-	// box length defined as unity
-	if (mypars.cellNx > mypars.cellNy) {
-		int tmp = mypars.cellNx;
-		mypars.cellNx = mypars.cellNy;
-		mypars.cellNy = tmp;
-	}
+	ConfigFile prms("conf.param");
 
-	mypars.sqrtDens = 4;
+	mypars.sqrtDens = prms.getValueOfKey4;
 	mypars.cellNx = 5;
 	mypars.cellNy = 5; // keep in mind we want square cells
 	mypars.AR = 1;
@@ -24,6 +20,13 @@ void setparams(Params & mypars)
 	mypars.transFactor = 0.04;
 	mypars.angMag = 0.04; // fraction of pi
 	mypars.onefile = false;
+
+	// box length defined as unity
+	if (mypars.cellNx > mypars.cellNy) {
+		int tmp = mypars.cellNx;
+		mypars.cellNx = mypars.cellNy;
+		mypars.cellNy = tmp;
+	}
 
 	double wallRatio = mypars.cellNx / mypars.cellNy;
 	mypars.box.set_values(mypars.boxEdge*wallRatio, mypars.boxEdge);

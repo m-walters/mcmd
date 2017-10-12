@@ -44,26 +44,26 @@ private:
 
 public:
 
-	Master(Params & myparams):
-		cellNx(myparams.cellNx),
-		cellNy(myparams.cellNy),
-		nCell(myparams.nCell),
-		Nx(myparams.Nx),
-		Ny(myparams.Ny),
-		nObj(myparams.nObj),
-		sweepEval(myparams.sweepEval),
-		sweepLimit(myparams.sweepLimit),
-		stepsInSweep(myparams.stepsInSweep),
-		sweepEvalProc(myparams.sweepEvalProc),
-		maxAttempts(myparams.maxAttempts),
-		dr(myparams.dr),
-		box(myparams.box),
-		cellWidth(myparams.cellWidth),
-		length(myparams.length),
-		molWidth(myparams.molWidth),
-		PtransMag(myparams.transMag),
-		PangMag(myparams.angMag),
-		onefile(myparams.onefile) {}
+	Master(Params *myparams):
+		cellNx(myparams->cellNx),
+		cellNy(myparams->cellNy),
+		nCell(myparams->nCell),
+		Nx(myparams->Nx),
+		Ny(myparams->Ny),
+		nObj(myparams->nObj),
+		sweepEval(myparams->sweepEval),
+		sweepLimit(myparams->sweepLimit),
+		stepsInSweep(myparams->stepsInSweep),
+		sweepEvalProc(myparams->sweepEvalProc),
+		maxAttempts(myparams->maxAttempts),
+		dr(myparams->dr),
+		box(myparams->box),
+		cellWidth(myparams->cellWidth),
+		length(myparams->length),
+		molWidth(myparams->molWidth),
+		PtransMag(myparams->transMag),
+		PangMag(myparams->angMag),
+		onefile(myparams->onefile) {}
  
 	bool noOverlap;
 	bool finalSweep;

@@ -1,28 +1,83 @@
 #ifndef PARAMS
 #define PARAMS
+
+#include "config_main.h"
+#include "Vec2D.h"
+
 struct Params
 {
-	int Nx, Ny, nObj;
-	// density defined as num per cell
+	
 	int sqrtDens;
- 	double dr;
-	int cellNx, cellNy, nCell;
-	Vec<double> box;
-	double AR;
-	double molWidth;
-	double length; // <1, fraction of cellwidth
-	double cellWidth;
-	double transFactor;
-	double transMag;
-	double angMag;
-	int maxAttempts;
+	int cellNx;
+	int cellNy;
+	int AR;
+	double length;
 	int sweepEval;
-	int sweepEvalProc;
 	int sweepLimit;
 	int nProc;
-	int stepsInSweep;
+	int sweepEvalProc;
+	int maxAttempts;
 	double boxEdge;
+	double transFactor;
+	double angMag;
 	bool onefile;
+	double wallRatio;
+	Vec<double> box;
+	double cellWidth;
+	double molWidth;
+	double dr;
+	int Nx;
+	int Ny;
+	int nObj;
+	double transMag;
+	int nCell;
+	int stepsInSweep;
+
+	Params() {
+		cout << "OK" << endl;
+		ConfigFile prms("conf.param");
+
+		cout << "sqd " << sqrtDens << endl;
+		sqrtDens = prms.getValueOfKey<int>("sqrtDens");
+		cout << "sqd " << sqrtDens << endl;
+		cellNx = prms.getValueOfKey<int>("cellNx");
+		cellNy = prms.getValueOfKey<int>("cellNy");
+		AR = prms.getValueOfKey<int>("AR");
+		length = prms.getValueOfKey<double>("length");
+		sweepEval = prms.getValueOfKey<int>("sweepEval");
+		sweepLimit = prms.getValueOfKey<int>("sweepLimit");
+		nProc = prms.getValueOfKey<int>("nProc");
+		sweepEvalProc = prms.getValueOfKey<int>("sweepEvalProc");
+		maxAttempts = prms.getValueOfKey<int>("maxAttempts");
+		boxEdge = prms.getValueOfKey<double>("boxEdge");
+		transFactor = prms.getValueOfKey<double>("transFactor");
+		angMag = prms.getValueOfKey<double>("angMag");
+		cout << "sqd " << sqrtDens << endl;
+		onefile = prms.getValueOfKey<int>("onefile");
+		cout << "onefile" << onefile << endl;
+		
+
+		// box length defined as unity
+		if (cellNx > cellNy) {
+			int tmp = cellNx;
+			cellNx = cellNy;
+			cellNy = tmp;
+		};
+
+		wallRatio = cellNx / cellNy;
+		box.set_values(boxEdge*wallRatio, boxEdge);
+		cellWidth = boxEdge / cellNy;
+		molWidth = AR * length;
+		dr = (double)(cellWidth / sqrtDens);
+		Nx = sqrtDens * cellNx;
+		Ny = sqrtDens * cellNy;
+		nObj = Nx * Ny;
+		transMag = transFactor*dr;
+		nCell = cellNx * cellNy;
+		stepsInSweep = nObj;
+	};
+
+
 
 	void printParams() {
 		cout << "Nx " << Nx << endl
