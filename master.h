@@ -8,6 +8,7 @@
 #include <chrono>
 #include <fstream>
 #include <map>
+#include <cstring>
 #include "Vec2D.h"
 #include "params.h"
 #include "obj.h"
@@ -38,6 +39,7 @@ private:
 	Obj<T> *ghost;
 	double transMag, PtransMag;
 	double angMag, PangMag;
+	bool onefile;
 	ofstream fout;
 
 public:
@@ -60,7 +62,8 @@ public:
 		length(myparams.length),
 		molWidth(myparams.molWidth),
 		PtransMag(myparams.transMag),
-		PangMag(myparams.angMag) {}
+		PangMag(myparams.angMag),
+		onefile(myparams.onefile) {}
  
 	bool noOverlap;
 	bool finalSweep;
@@ -77,7 +80,6 @@ public:
 		transMag = transFactor*dr;
 
 		InitMap();
-		WriteSweep();
 	}
 
 	void MCSweep()
@@ -105,20 +107,15 @@ public:
 		} else {
 			if (sweepCount%sweepEvalProc == 0) {
 				Eval();
-				WriteSweep();
 				cout << "Sweep " << sweepCount << ", S " << S << ", failure rate: " 
 						 << nFailure/double(stepsInSweep) << endl;
 			}
-		}
-			
-		if (finalSweep) {
-			WriteSweep();
-			WritePixelImg();
 		}
 	}
 
 	void testfunc();
 	void PrintMap();
+	void WriteSweep(string fname, string path);
 	
 private:
 
@@ -133,7 +130,6 @@ private:
 	void UpdateCellNeighbors(Obj<T> *);
 	void RandRotate(Obj<T> *);
 	void GhostStep(const Obj<T> *);
-	void WriteSweep();
 	void WritePixelImg();
 	int CountOverlap(Obj<T> *);
 	int CountOverlapDB(Obj<T> *);
@@ -534,36 +530,59 @@ template <typename T> void Master<T>::PrintMap() {
 	cout << endl;
 };
 
-template <typename T> void Master<T>::WriteSweep() {
-	// Need to account for zeros in string
-	string sID;
-	int order = int(log10(sweepCount));
-	int nzero = 7 - order;
-	for (int o=0; o<nzero; o++) {
-		sID.append("0");
-	}
-	sID.append(to_string(sweepCount));
-	if (finalSweep) {
-		fout.open("output/finalsweep_"+sID, ios::out | ios::trunc);
-	} else {
-		fout.open("output/sweep_"+sID, ios::out | ios::trunc);
-	}
-
-	for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
-		fout << it->second->ID << " " 
-				 << it->second->cellIdx << " " 
-				 << it->second->rc.x << " " 
-				 << it->second->rc.y << " " 
-				 << it->second->angle << " ";
-		for(Vec<double> v : it->second->vert) {
-			fout << v.x << " " << v.y << " ";
-		}
-		for(int i=0; i<8; i++) {
-			fout << it->second->neighborCells[i] << " ";
+template <typename T> void Master<T>::WriteSweep(string fname, string path) {
+	
+		if (onefile) {
+		fout.open(path+fname, ios::out | ios::app);
+		if (!fout.is_open()) cout << "NOT open" << endl;
+		cout << "Writing to " << path+fname << endl;
+		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
+			fout << it->second->ID << " " 
+					 << it->second->cellIdx << " " 
+					 << it->second->rc.x << " " 
+					 << it->second->rc.y << " " 
+					 << it->second->angle << " ";
+			for(Vec<double> v : it->second->vert) {
+				fout << v.x << " " << v.y << " ";
+			}
+			for(int i=0; i<8; i++) {
+				fout << it->second->neighborCells[i] << " ";
+			}
+			fout << endl;
 		}
 		fout << endl;
+		fout.close();
+	} else {
+		// Need to account for zeros in string
+		string sID;
+		int order = int(log10(sweepCount));
+		int nzero = 7 - order;
+		for (int o=0; o<nzero; o++) {
+			sID.append("0");
+		}
+		sID.append(to_string(sweepCount));
+		if (finalSweep) {
+			fout.open(path+fname+"_final_"+sID, ios::out | ios::trunc);
+		} else {
+			fout.open(path+fname+"_"+sID, ios::out | ios::trunc);
+		}
+
+		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
+			fout << it->second->ID << " " 
+					 << it->second->cellIdx << " " 
+					 << it->second->rc.x << " " 
+					 << it->second->rc.y << " " 
+					 << it->second->angle << " ";
+			for(Vec<double> v : it->second->vert) {
+				fout << v.x << " " << v.y << " ";
+			}
+			for(int i=0; i<8; i++) {
+				fout << it->second->neighborCells[i] << " ";
+			}
+			fout << endl;
+		}
+		fout.close();
 	}
-	fout.close();
 };
 	
 

@@ -22,6 +22,7 @@ struct Params
 	int nProc;
 	int stepsInSweep;
 	double boxEdge;
+	bool onefile;
 
 	void printParams() {
 		cout << "Nx " << Nx << endl
