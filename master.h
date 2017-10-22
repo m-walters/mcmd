@@ -67,7 +67,7 @@ public:
  
 	bool noOverlap;
 	bool finalSweep;
-	double S;
+	double L;
 
 	void InitializeSim() {
 		sweepCount = 0;
@@ -98,7 +98,7 @@ public:
 				cout << "Failure rate: " << nFailure/double(stepsInSweep) << endl;
 			}
 			if (sweepCount%sweepEval == 0) {
-				if (Eval()) {
+				if (TotalOverlap() == 0) {
 					noOverlap = true;
 					angMag = PangMag;
 					transMag = PtransMag;
@@ -106,16 +106,23 @@ public:
 			}
 		} else {
 			if (sweepCount%sweepEvalProc == 0) {
-				Eval();
-				cout << "Sweep " << sweepCount << ", S " << S << ", failure rate: " 
+				cout << "Sweep " << sweepCount << ", L " << EvalOrder() << ", failure rate: " 
 						 << nFailure/double(stepsInSweep) << endl;
 			}
 		}
 	}
 
+	double normalizeAngle(double ang) {
+		if (ang < 0.) ang += 2.*M_PI;
+		if (ang > 2.*M_PI) ang -= 2.*M_PI;
+		return ang;
+	};
+
 	void testfunc();
 	void PrintMap();
 	void WriteSweep(string fname, string path);
+	double EvalOrder();
+	int TotalOverlap();
 	
 private:
 
@@ -123,7 +130,6 @@ private:
 	bool BoundaryClear(Obj<T> *);
 	bool isOverlap(Obj<T> *, Obj<T> *);
 	bool InitOverlapCheck(Obj<T> *);
-	bool Eval();
 	void Sweep();
 	void InitMap();
 	void UpdateCellIdx(Obj<T> *);
@@ -132,7 +138,6 @@ private:
 	void GhostStep(const Obj<T> *);
 	void WritePixelImg();
 	int CountOverlap(Obj<T> *);
-	int CountOverlapDB(Obj<T> *);
 
 };
 
@@ -153,41 +158,80 @@ template <typename T> void Master<T>::testfunc() {
 }
 
 
-template <typename T> bool Master<T>::Eval() 
+template <typename T> int Master<T>::TotalOverlap()
 {
-	S = 0.;
-	int Nth = 0;
-	int totalOverlap = 0;
+	int nOverlap = 0;
 	// Iterate over cellmap
 	for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
-		totalOverlap += (!BoundaryClear(it->second));
+		nOverlap += (!BoundaryClear(it->second));
 		int idx = it->second->cellIdx;
 		for (cellmapIterator nbr=cellmap.equal_range(idx).first;
 				 nbr!=cellmap.equal_range(idx).second; nbr++) {
-			if (nbr->second->ID == it->second->ID) continue;
-			totalOverlap += isOverlap(it->second, nbr->second);
-			S += cos(2.*(it->second->angle - nbr->second->angle));
-			Nth++;
+			if (it->second->ID == nbr->second->ID) continue;
+			nOverlap += isOverlap(it->second, nbr->second);
 		}
 		for (int n : it->second->neighborCells) {
 			if (n!=-1) {
 				for (cellmapIterator nbr=cellmap.equal_range(n).first;
 						 nbr != cellmap.equal_range(n).second; nbr++) {
-					totalOverlap += isOverlap(it->second, nbr->second);
-					if(0){
-						S += cos(2.*(it->second->angle - nbr->second->angle));
-						Nth++;
+					nOverlap += isOverlap(it->second, nbr->second);
+				}
+			}
+		}
+	}
+	return nOverlap;
+}
+
+
+template <typename T> double Master<T>::EvalOrder() 
+{
+	L = 0.;
+	double s = 0., t = 0.; // When iterating, each rod will encounter itself
+	int Nth = 0;
+	// Iterate over cellmap
+	if (0) {
+		// if wanting to just do local comparisons
+		for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
+			int idx = it->second->cellIdx;
+			for (cellmapIterator nbr=cellmap.equal_range(idx).first;
+					 nbr!=cellmap.equal_range(idx).second; nbr++) {
+				if (nbr->second->ID == it->second->ID) continue;
+				s += cos(2.*(it->second->angle - nbr->second->angle));
+				t += sin(2.*(it->second->angle - nbr->second->angle));
+				Nth++;
+			}
+			for (int n : it->second->neighborCells) {
+				if (n!=-1) {
+					for (cellmapIterator nbr=cellmap.equal_range(n).first;
+							 nbr != cellmap.equal_range(n).second; nbr++) {
+						if(0){
+							s += cos(2.*(it->second->angle - nbr->second->angle));
+							t += sin(2.*(it->second->angle - nbr->second->angle));
+							Nth++;
+						}
 					}
 				}
 			}
 		}
-		//if (it->second->ID == 1) cout << "----------------------" << endl;
+	}
+	if (1) {
+		s = -nObj, t = 0.; // When iterating, each rod will encounter itself
+		Nth = -nObj;
+		for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
+			for (cellmapIterator nbr=cellmap.begin(); nbr!=cellmap.end(); nbr++) {
+				s += cos(2.*(it->second->angle - nbr->second->angle));
+				t += sin(2.*(it->second->angle - nbr->second->angle));
+				Nth++;
+			}
+		}
 	}
 
-	S /= Nth;
+	s /= Nth;
+	t /= Nth;
+	L = sqrt(s*s + t*t);
 
-	if (!noOverlap) cout << S << " " << totalOverlap << endl;
-	return (totalOverlap == 0);
+	if (!noOverlap) cout << "Order param L " << L << endl;
+	return L;
 
 }
 
@@ -339,8 +383,8 @@ template <> void Master<Rod>::InitMap()
 	int n=0;
 	cout << "start init" << endl;
 
-	for (int nx=0; nx <Nx; nx++) {
-		for (int ny=0; ny <Ny; ny++) {
+	for (int nx=0; nx<Nx; nx++) {
+		for (int ny=0; ny<Ny; ny++) {
 			Obj<Rod> *r = new Obj<Rod>(n);
 			c.set_values(nx*dr, ny*dr);
 			c = c+shift;
@@ -352,7 +396,8 @@ template <> void Master<Rod>::InitMap()
 			UpdateCellNeighbors(r);
 			if (1) {
 				// Random dist
-				th = M_PI*(2.*distribution(generator) - 1.);
+				//th = M_PI*(2.*distribution(generator) - 1.);
+				th = 2.*M_PI*distribution(generator);
 			}
 			if (0) {
 				// Generating X configuration
@@ -364,16 +409,10 @@ template <> void Master<Rod>::InitMap()
 				if ((x<y) && (x>-y)) th = dth;
 				if ((x<y) && (x<-y)) th = M_PI*0.5 + dth;
 			}
+			th = normalizeAngle(th);
 			r->RotateVerts(th);
 			r->angle = th;
 			ghost->Copy(*r);
-			if (0) {
-				if (!BoundaryClear(ghost)) {
-					n+=1;
-					continue;
-				}
-			}
-
 			if (0) {
 				// X-config
 				while (!BoundaryClear(ghost)) {
@@ -487,10 +526,9 @@ template <typename T> void Master<T>::UpdateCellNeighbors(Obj<T> *p) {
 template <typename T> void Master<T>::RandRotate(Obj<T> *p) {
 	uniform_real_distribution<double> distribution(0,1.0);
 	//normal_distribution<double> distribution(0,1.0);
-	//double dt = angMag*M_PI*distribution(generator);
 	double dt = angMag*M_PI*(2.*distribution(generator) - 1.);
 	p->RotateVerts(dt);
-	p->angle += dt;
+	p->angle = normalizeAngle(p->angle + dt);
 }
 
 
@@ -532,10 +570,14 @@ template <typename T> void Master<T>::PrintMap() {
 
 template <typename T> void Master<T>::WriteSweep(string fname, string path) {
 	
-		if (onefile) {
+	if (onefile) {
 		fout.open(path+fname, ios::out | ios::app);
-		if (!fout.is_open()) cout << "NOT open" << endl;
-		cout << "Writing to " << path+fname << endl;
+		if (!fout.is_open()) {
+			cout << "Could not open file for writing!" << endl;
+			return;
+		}	else {
+			cout << "Writing to " << path+fname << endl;
+		}
 		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
 			fout << it->second->ID << " " 
 					 << it->second->cellIdx << " " 
@@ -561,11 +603,7 @@ template <typename T> void Master<T>::WriteSweep(string fname, string path) {
 			sID.append("0");
 		}
 		sID.append(to_string(sweepCount));
-		if (finalSweep) {
-			fout.open(path+fname+"_final_"+sID, ios::out | ios::trunc);
-		} else {
-			fout.open(path+fname+"_"+sID, ios::out | ios::trunc);
-		}
+		fout.open(path+fname+"_"+sID, ios::out | ios::trunc);
 
 		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
 			fout << it->second->ID << " " 
@@ -577,7 +615,7 @@ template <typename T> void Master<T>::WriteSweep(string fname, string path) {
 				fout << v.x << " " << v.y << " ";
 			}
 			for(int i=0; i<8; i++) {
-				fout << it->second->neighborCells[i] << " ";
+					fout << it->second->neighborCells[i] << " ";
 			}
 			fout << endl;
 		}

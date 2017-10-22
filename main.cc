@@ -9,21 +9,21 @@ int main(int argc, const char *argv[])
 {     
 
 	typedef high_resolution_clock myclock;
-	cout << "OK" << endl;
-	Params *simparams = new Params();
+	Params *simparams = new Params(argv[argc-1]);
 
-	//setparams(simparams);
 	simparams->printParams();
+	if (simparams->cellWidth < simparams->length) {
+		cout << "Error. Cell width is smaller than obj length" << endl;
+		return 1;
+	}
 	Master<Rod> master(simparams);
 	master.InitializeSim();
 	int sweep = 1;
 	for (; sweep <= simparams->sweepLimit; sweep++) {
 		if (!master.noOverlap)
 			master.MCSweep();
-		else {
-			master.finalSweep = true;
+		else 
 			break;
-		}
 	}
 	myclock::time_point beginning = myclock::now();
 	if (master.noOverlap) {
@@ -32,18 +32,19 @@ int main(int argc, const char *argv[])
 				 << "Performing " << simparams->nProc << " more sweeps..." << endl;
 		for (int i=1; i<simparams->nProc; i++) {
 			master.MCSweep();
-			if (i%simparams->sweepEvalProc==0) {
-				if (argc == 2) {
-					master.WriteSweep(to_string(*argv[1]), "");
-				} else if (argc == 3) {
-					cout << "Writing to path " << argv[2] << endl;
-					master.WriteSweep(argv[1], argv[2]);
+			if (i > simparams->nEquil) {
+				if (i%simparams->sweepEvalProc==0) {
+					if (argc == 2) {
+						master.WriteSweep(to_string(*argv[1]), "");
+					} else if (argc > 2) {
+						master.WriteSweep(argv[1], argv[2]);
+					}
 				}
 			}
 		}
 	}
 	auto dur = duration_cast<seconds>(myclock::now() - beginning).count();
-	cout << endl << dur << endl;
+	cout << endl << "Processing time: " << dur << " seconds" <<  endl;
 
 	return 0;
 }

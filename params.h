@@ -7,7 +7,6 @@
 struct Params
 {
 	
-	int sqrtDens;
 	int cellNx;
 	int cellNy;
 	int AR;
@@ -15,6 +14,7 @@ struct Params
 	int sweepEval;
 	int sweepLimit;
 	int nProc;
+	int nEquil;
 	int sweepEvalProc;
 	int maxAttempts;
 	double boxEdge;
@@ -33,13 +33,11 @@ struct Params
 	int nCell;
 	int stepsInSweep;
 
-	Params() {
-		cout << "OK" << endl;
-		ConfigFile prms("conf.param");
+	Params(std::string cnfFile) {
+		ConfigFile prms(cnfFile);
 
-		cout << "sqd " << sqrtDens << endl;
-		sqrtDens = prms.getValueOfKey<int>("sqrtDens");
-		cout << "sqd " << sqrtDens << endl;
+		Nx = prms.getValueOfKey<int>("Nx");
+		Ny = prms.getValueOfKey<int>("Ny");
 		cellNx = prms.getValueOfKey<int>("cellNx");
 		cellNy = prms.getValueOfKey<int>("cellNy");
 		AR = prms.getValueOfKey<int>("AR");
@@ -52,9 +50,7 @@ struct Params
 		boxEdge = prms.getValueOfKey<double>("boxEdge");
 		transFactor = prms.getValueOfKey<double>("transFactor");
 		angMag = prms.getValueOfKey<double>("angMag");
-		cout << "sqd " << sqrtDens << endl;
 		onefile = prms.getValueOfKey<int>("onefile");
-		cout << "onefile" << onefile << endl;
 		
 
 		// box length defined as unity
@@ -68,9 +64,8 @@ struct Params
 		box.set_values(boxEdge*wallRatio, boxEdge);
 		cellWidth = boxEdge / cellNy;
 		molWidth = AR * length;
-		dr = (double)(cellWidth / sqrtDens);
-		Nx = sqrtDens * cellNx;
-		Ny = sqrtDens * cellNy;
+		dr = (double) boxEdge/Nx;
+		//dr = (double)(cellWidth / sqrtDens);
 		nObj = Nx * Ny;
 		transMag = transFactor*dr;
 		nCell = cellNx * cellNy;
@@ -80,10 +75,11 @@ struct Params
 
 
 	void printParams() {
+		double rho = (double) nObj / (boxEdge*boxEdge);
+		double redRho = length*length*rho;
 		cout << "Nx " << Nx << endl
 				 << "Ny " << Ny << endl
 				 << "nObj " << nObj << endl
-				 << "sqrtDens " << sqrtDens << endl
 				 << "dr " << dr  << endl
 				 << "cellNx " << cellNx << endl
 				 << "cellNy " << cellNy  << endl
@@ -97,10 +93,15 @@ struct Params
 				 << "length " << length << endl
 				 << "transFactor " << transFactor << endl
 				 << "transMag " << transMag  << endl
+				 << "sweepLimit " << sweepLimit << endl
 				 << "sweepEval " << sweepEval << endl
-				 << "sweepEvalProc " << sweepEvalProc << endl
+				 << "nEquil " << nEquil << endl
 				 << "nProc " << nProc << endl
-				 << "sweepLimit " << sweepLimit << endl;
+				 << "nEquil " << nEquil << endl
+				 << "sweepEvalProc " << sweepEvalProc << endl
+				 << endl
+				 << "Rho " << rho << endl
+				 << "Reduced rho " << redRho << endl;
 	}
 };
 #endif
