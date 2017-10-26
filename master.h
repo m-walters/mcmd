@@ -26,7 +26,7 @@ private:
 
 	int cellNx, cellNy, nCell;
 	int Nx, Ny, nObj;
-	int sweepCount, sweepEval, sweepLimit, stepsInSweep;
+	int sweepCount, sweepEval, sweepLimit;
 	int sweepEvalProc;
 	int nFailure;
 	int maxAttempts;
@@ -53,7 +53,6 @@ public:
 		nObj(myparams->nObj),
 		sweepEval(myparams->sweepEval),
 		sweepLimit(myparams->sweepLimit),
-		stepsInSweep(myparams->stepsInSweep),
 		sweepEvalProc(myparams->sweepEvalProc),
 		maxAttempts(myparams->maxAttempts),
 		dr(myparams->dr),
@@ -88,17 +87,15 @@ public:
 		sweepCount += 1;
 		Sweep();
 		if (!noOverlap) {
-			if (sweepLimit > 19) {
-				if (sweepCount % (sweepLimit/100) == 0) {
-					cout << (int)100*(double(sweepCount)/sweepLimit) << "\% complete" << endl;
-					cout << "Failure rate: " << nFailure/double(stepsInSweep) << endl;
-				}
-			} else {
-				cout << (int)100*(double(sweepCount)/sweepLimit) << "\% complete" << endl;
-				cout << "Failure rate: " << nFailure/double(stepsInSweep) << endl;
-			}
 			if (sweepCount%sweepEval == 0) {
-				if (TotalOverlap() == 0) {
+				int o = TotalOverlap();
+				if (sweepCount%400 == 0) {
+					cout << "Sweep " << sweepCount << ", " 
+							 << (int)100*(double(sweepCount)/sweepLimit) << "\% of sweep limit" << endl;
+					cout << "Overlaps: " << o << ", Failure rate: " 
+							 << nFailure/double(nObj) << endl;
+				}
+				if (o == 0) {
 					noOverlap = true;
 					angMag = PangMag;
 					transMag = PtransMag;
@@ -106,8 +103,8 @@ public:
 			}
 		} else {
 			if (sweepCount%sweepEvalProc == 0) {
-				cout << "Sweep " << sweepCount << ", L " << EvalOrder() << ", failure rate: " 
-						 << nFailure/double(stepsInSweep) << endl;
+				cout << "Sweep " << sweepCount << ", failure rate: " 
+						 << nFailure/double(nObj) << endl;
 			}
 		}
 	}
@@ -575,8 +572,6 @@ template <typename T> void Master<T>::WriteSweep(string fname, string path) {
 		if (!fout.is_open()) {
 			cout << "Could not open file for writing!" << endl;
 			return;
-		}	else {
-			cout << "Writing to " << path+fname << endl;
 		}
 		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
 			fout << it->second->ID << " " 

@@ -31,7 +31,6 @@ struct Params
 	int nObj;
 	double transMag;
 	int nCell;
-	int stepsInSweep;
 
 	Params(std::string cnfFile) {
 		ConfigFile prms(cnfFile);
@@ -69,7 +68,6 @@ struct Params
 		nObj = Nx * Ny;
 		transMag = transFactor*dr;
 		nCell = cellNx * cellNy;
-		stepsInSweep = nObj;
 	};
 
 
@@ -97,7 +95,6 @@ struct Params
 				 << "sweepEval " << sweepEval << endl
 				 << "nEquil " << nEquil << endl
 				 << "nProc " << nProc << endl
-				 << "nEquil " << nEquil << endl
 				 << "sweepEvalProc " << sweepEvalProc << endl
 				 << endl
 				 << "Rho " << rho << endl

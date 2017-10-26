@@ -29,7 +29,8 @@ int main(int argc, const char *argv[])
 	if (master.noOverlap) {
 		// Processing sweeps
 		cout << "Beginning processing run at sweep " << sweep << endl
-				 << "Performing " << simparams->nProc << " more sweeps..." << endl;
+				 << "Performing " << simparams->nProc << " more sweeps..." << endl
+				 << "Writing to " << argv[2] << argv[1] << endl;
 		for (int i=1; i<simparams->nProc; i++) {
 			master.MCSweep();
 			if (i > simparams->nEquil) {
