@@ -385,39 +385,105 @@ template <> void Master<Rod>::InitMap()
 			Obj<Rod> *r = new Obj<Rod>(n);
 			c.set_values(nx*dr, ny*dr);
 			c = c+shift;
+			// Jiggle xy a bit
+			c.y += 0.0001*(2.*distribution(generator)-1.);
+			c.x += 0.00011*(2.*distribution(generator)-1.);
 			r->rc = c;
 			r->vert[0].set_values(c.x, c.y + length*0.5);
 			r->vert[1].set_values(c.x, c.y - length*0.5);
 			r->angle = 0.;
 			UpdateCellIdx(r);
 			UpdateCellNeighbors(r);
-			if (1) {
+			if (0) {
 				// Random dist
-				//th = M_PI*(2.*distribution(generator) - 1.);
 				th = 2.*M_PI*distribution(generator);
 			}
-			if (0) {
+			if (1) {
 				// Generating X configuration
 				x = c.x;
 				y = c.y;
+				double thFactor;
 				dth = 0.1*(2.*distribution(generator) - 1.);
-				if ((x>y) && (x>-y)) th = M_PI*0.5 + dth;
-				if ((x>y) && (x<-y)) th = dth;
-				if ((x<y) && (x>-y)) th = dth;
-				if ((x<y) && (x<-y)) th = M_PI*0.5 + dth;
+				if ((x>y) && (x>-y)) {
+					thFactor = 1. - (x-y)/x;
+					th = -M_PI*0.25*thFactor + dth;
+				}
+				if ((x>y) && (x<-y)) {
+					thFactor = 0.5*(y-x)/y; 
+					th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
+				}
+				if ((x<y) && (x>-y)) {
+					thFactor = 0.5*(y-x)/y; 
+					th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
+				}
+				if ((x<y) && (x<-y)) {
+					thFactor = (x-y)/x;
+					th = -M_PI*0.25 + M_PI*0.25*thFactor + dth;
+				}
+				if (nx == ny) th = M_PI*0.75 + dth;
+				if ((nx + ny) == (Ny-1)) th = M_PI*0.25 + dth;
+				if ((nx==0) && (ny==0)) {
+					r->rc.x += length*0.3;
+					r->rc.y += length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==0)) {
+					r->rc.x -= length*0.3;
+					r->rc.y += length*0.3;
+				}
+				if ((nx==0) && (ny==Ny-1)) {
+					r->rc.x += length*0.3;
+					r->rc.y -= length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==Ny-1)) {
+					r->rc.x -= length*0.3;
+					r->rc.y -= length*0.3;
+				}
 			}
 			th = normalizeAngle(th);
 			r->RotateVerts(th);
 			r->angle = th;
 			ghost->Copy(*r);
+
+			while (!BoundaryClear(ghost)) {
+				ghost->Copy(*r);
+				int initIdx = ghost->cellIdx;
+				double minx = ghost->vert[0].x;
+				double miny = ghost->vert[0].y;
+				double maxx = ghost->vert[0].x;
+				double maxy = ghost->vert[0].y;
+				for (Vec<double> v : ghost->vert) {
+					if (v.x < minx) minx = v.x;
+					if (v.y < miny) miny = v.y;
+					if (v.x > maxx) maxx = v.x;
+					if (v.y > maxy) maxy = v.y;
+				}
+				double dx = 0., dy = 0.;
+				if (minx < -0.5*box.x) dx = -0.5*box.x - minx + 0.001;
+				if (miny < -0.5*box.y) dy = -0.5*box.y - miny + 0.001;
+				if (maxx > 0.5*box.x) dx = 0.5*box.x - maxx - 0.001;
+				if (maxy > 0.5*box.y) dy = 0.5*box.y - maxy - 0.001;
+
+				ghost->rc.x += dx;
+				ghost->rc.y += dy;
+				int i=0;
+				for (Vec<double> v : ghost->vert) {
+					ghost->vert[i].x = v.x + dx;
+					ghost->vert[i].y = v.y + dy;
+					i++;
+				}
+				// Update ghost
+				UpdateCellIdx(ghost);
+				if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
+			}
 			if (0) {
 				// X-config
 				while (!BoundaryClear(ghost)) {
+					ghost->Copy(*r);
 					double dx = 0., dy = 0.;
 					int initIdx = ghost->cellIdx;
 					x = ghost->rc.x;
 					y = ghost->rc.y;
-					if ((x>=y) && (x>-y)) dx = -length*0.4;
+					if ((x>y) && (x>-y)) dx = -length*0.4;
 					if ((x>y) && (x<-y)) dy = length*0.4;
 					if ((x<y) && (x>-y)) dy = -length*0.4;
 					if ((x<y) && (x<-y)) dx = length*0.4;
@@ -435,7 +501,7 @@ template <> void Master<Rod>::InitMap()
 					if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
 				}
 			}
-			if (1) {
+			if (0) {
 				// Rand config
 				while (!BoundaryClear(ghost)) {
 					ghost->Copy(*r);

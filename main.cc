@@ -18,6 +18,7 @@ int main(int argc, const char *argv[])
 	}
 	Master<Rod> master(simparams);
 	master.InitializeSim();
+	master.WriteSweep(argv[1], argv[2]);
 	int sweep = 1;
 	for (; sweep <= simparams->sweepLimit; sweep++) {
 		if (!master.noOverlap)
@@ -25,6 +26,7 @@ int main(int argc, const char *argv[])
 		else 
 			break;
 	}
+	master.WriteSweep(argv[1], argv[2]);
 	myclock::time_point beginning = myclock::now();
 	if (master.noOverlap) {
 		// Processing sweeps
