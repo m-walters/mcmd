@@ -74,8 +74,10 @@ public:
 		finalSweep = false;
 		ghost = new Obj<T>(-1);
 		// Pre-Processing jiggle params
-		angMag = 0.2;
-		double transFactor = 0.1;
+		//angMag = 0.2;
+		//double transFactor = 0.1;
+		angMag = 0.002;
+		double transFactor = 0.02;
 		transMag = transFactor*dr;
 
 		InitMap();
@@ -394,11 +396,36 @@ template <> void Master<Rod>::InitMap()
 			r->angle = 0.;
 			UpdateCellIdx(r);
 			UpdateCellNeighbors(r);
-			if (0) {
+			if (1) {
 				// Random dist
 				th = 2.*M_PI*distribution(generator);
 			}
-			if (1) {
+			if (0) {
+				// Generating T configuration
+				x = c.x;
+				y = c.y;
+				double thFactor;
+				dth = 0.1*(2.*distribution(generator) - 1.);
+				if ((x>y) && (x<-y)) {
+					thFactor = 0.5*(y-x)/y; 
+					th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
+				}
+				if ((x<y) && (x<-y)) {
+					thFactor = (x-y)/x;
+					th = -M_PI*0.25 + M_PI*0.25*thFactor + dth;
+				}
+				if (x>-y) {
+					th = M_PI*0.25 + dth;
+				}
+				if ((nx + ny) == (Ny-1)) {
+					th = M_PI*0.25 + dth;
+				}
+				if (nx>Nx-3) th = dth;
+				if (nx<2) th = dth;
+				if (ny>Ny-3) th = M_PI*0.5 + dth;
+				if (ny<2) th = M_PI*0.5 + dth;
+			}
+			if (0) {
 				// Generating X configuration
 				x = c.x;
 				y = c.y;
@@ -420,8 +447,14 @@ template <> void Master<Rod>::InitMap()
 					thFactor = (x-y)/x;
 					th = -M_PI*0.25 + M_PI*0.25*thFactor + dth;
 				}
-				if (nx == ny) th = M_PI*0.75 + dth;
-				if ((nx + ny) == (Ny-1)) th = M_PI*0.25 + dth;
+				if (nx == ny) {
+					r->diag = true;
+					th = M_PI*0.75 + dth;
+				}
+				if ((nx + ny) == (Ny-1)) {
+					th = M_PI*0.25 + dth;
+					r->diag = true;
+				}
 				if ((nx==0) && (ny==0)) {
 					r->rc.x += length*0.3;
 					r->rc.y += length*0.3;
@@ -601,7 +634,8 @@ template <typename T> void Master<T>::GhostStep(const Obj<T> *copy)
 	int initIdx = ghost->cellIdx;
 	
 	// Rotate
-	RandRotate(ghost);
+	if (!noOverlap && ghost->diag) {}
+	else RandRotate(ghost);
 	
 	// Translate
 	double dx = transMag*(2.*distribution(generator) - 1);

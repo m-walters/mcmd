@@ -21,6 +21,7 @@ public:
   int ID;
 	int cellIdx;
 	int neighborCells[8];
+	bool diag = false;
 
 	Obj() {};
 	Obj(int id): ID(id) {};
