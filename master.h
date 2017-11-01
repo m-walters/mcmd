@@ -396,11 +396,11 @@ template <> void Master<Rod>::InitMap()
 			r->angle = 0.;
 			UpdateCellIdx(r);
 			UpdateCellNeighbors(r);
-			if (1) {
+			if (0) {
 				// Random dist
 				th = 2.*M_PI*distribution(generator);
 			}
-			if (0) {
+			if (1) {
 				// Generating T configuration
 				x = c.x;
 				y = c.y;
@@ -507,59 +507,6 @@ template <> void Master<Rod>::InitMap()
 				// Update ghost
 				UpdateCellIdx(ghost);
 				if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
-			}
-			if (0) {
-				// X-config
-				while (!BoundaryClear(ghost)) {
-					ghost->Copy(*r);
-					double dx = 0., dy = 0.;
-					int initIdx = ghost->cellIdx;
-					x = ghost->rc.x;
-					y = ghost->rc.y;
-					if ((x>y) && (x>-y)) dx = -length*0.4;
-					if ((x>y) && (x<-y)) dy = length*0.4;
-					if ((x<y) && (x>-y)) dy = -length*0.4;
-					if ((x<y) && (x<-y)) dx = length*0.4;
-
-					ghost->rc.x += dx;
-					ghost->rc.y += dy;
-					int i=0;
-					for (Vec<double> v : ghost->vert) {
-						ghost->vert[i].x = v.x + dx;
-						ghost->vert[i].y = v.y + dy;
-						i++;
-					}
-					// Update ghost
-					UpdateCellIdx(ghost);
-					if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
-				}
-			}
-			if (0) {
-				// Rand config
-				while (!BoundaryClear(ghost)) {
-					ghost->Copy(*r);
-					int initIdx = ghost->cellIdx;
-					
-					// Rotate
-					RandRotate(ghost);
-					
-					// Translate
-					// Need to try translating a good distance to get away from wall
-					double dx = 0.8*length*(2.*distribution(generator) - 1);
-					double dy = 0.8*length*(2.*distribution(generator) - 1);
-					ghost->rc.x = ghost->rc.x + dx;
-					ghost->rc.y = ghost->rc.y + dy;
-					int i=0;
-					for (Vec<double> v : ghost->vert) {
-						ghost->vert[i].x = v.x + dx;
-						ghost->vert[i].y = v.y + dy;
-						i++;
-					}
-					
-					// Update ghost
-					UpdateCellIdx(ghost);
-					if (ghost->cellIdx != initIdx) UpdateCellNeighbors(ghost);
-				}
 			}
 			r->Copy(*ghost);
 			cellmap.insert(pair<int, Obj<Rod>*>(r->cellIdx, r)); 
