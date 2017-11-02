@@ -1,6 +1,7 @@
 #ifndef PARAMS
 #define PARAMS
 
+#include <iostream>
 #include "config_main.h"
 #include "Vec2D.h"
 
@@ -31,6 +32,7 @@ struct Params
 	int nObj;
 	double transMag;
 	int nCell;
+	std::string shape;
 
 	Params(std::string cnfFile) {
 		ConfigFile prms(cnfFile);
@@ -50,6 +52,7 @@ struct Params
 		transFactor = prms.getValueOfKey<double>("transFactor");
 		angMag = prms.getValueOfKey<double>("angMag");
 		onefile = prms.getValueOfKey<int>("onefile");
+		shape = prms.getValueOfKey<std::string>("shape");
 		
 
 		// box length defined as unity
@@ -72,6 +75,42 @@ struct Params
 
 
 
+	void writeParams(string fname) {
+		ofstream fout;
+		fout.open(fname, ios::out | ios::app);
+		if (!fout.is_open()) {
+			cout << "Could not open file for writing!" << endl;
+			return;
+		}
+		double rho = (double) nObj / (boxEdge*boxEdge);
+		double redRho = length*length*rho;
+		fout << "Nx " << Nx << "|"
+				 << "Ny " << Ny << "|"
+				 << "nObj " << nObj << "|"
+				 << "dr " << dr  << "|"
+				 << "cellNx " << cellNx << "|"
+				 << "cellNy " << cellNy  << "|"
+				 << "nCell " << nCell << "|"
+				 << "boxEdge " << boxEdge << "|"
+				 << "box.x " << box.x << "|"
+				 << "box.y " << box.y << "|"
+				 << "cellWidth " << cellWidth << "|"
+				 << "AR " << AR << "|"
+				 << "shape " << shape << "|"
+				 << "molWidth " << molWidth << "|"
+				 << "length " << length << "|"
+				 << "transFactor " << transFactor << "|"
+				 << "transMag " << transMag  << "|"
+				 << "sweepLimit " << sweepLimit << "|"
+				 << "sweepEval " << sweepEval << "|"
+				 << "nEquil " << nEquil << "|"
+				 << "nProc " << nProc << "|"
+				 << "sweepEvalProc " << sweepEvalProc << "|"
+				 << "Rho " << rho << "|"
+				 << "ReducedRho " << redRho << endl;
+		fout.close();
+	}
+
 	void printParams() {
 		double rho = (double) nObj / (boxEdge*boxEdge);
 		double redRho = length*length*rho;
@@ -87,6 +126,7 @@ struct Params
 				 << "box.y " << box.y << endl
 				 << "cellWidth " << cellWidth << endl
 				 << "AR " << AR << endl
+				 << "shape " << shape << endl
 				 << "molWidth " << molWidth << endl
 				 << "length " << length << endl
 				 << "transFactor " << transFactor << endl

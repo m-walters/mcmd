@@ -4,6 +4,7 @@ cellNx = 5;
 cellNy = 5; // keep in mind we want square cells
 boxEdge = 20.;
 length = 3;
+shape = X;
 AR = 1;
 sweepEval = 50;
 sweepLimit = 100000;

@@ -40,6 +40,7 @@ private:
 	double transMag, PtransMag;
 	double angMag, PangMag;
 	bool onefile;
+	std::string shape;
 	ofstream fout;
 
 public:
@@ -62,7 +63,8 @@ public:
 		molWidth(myparams->molWidth),
 		PtransMag(myparams->transMag),
 		PangMag(myparams->angMag),
-		onefile(myparams->onefile) {}
+		onefile(myparams->onefile),
+		shape(myparams->shape) {}
  
 	bool noOverlap;
 	bool finalSweep;
@@ -119,7 +121,7 @@ public:
 
 	void testfunc();
 	void PrintMap();
-	void WriteSweep(string fname, string path);
+	void WriteSweep(string fname);
 	double EvalOrder();
 	int TotalOverlap();
 	
@@ -214,14 +216,11 @@ template <typename T> double Master<T>::EvalOrder()
 		}
 	}
 	if (1) {
-		s = -nObj, t = 0.; // When iterating, each rod will encounter itself
-		Nth = -nObj;
+		s = 0., t = 0.; // When iterating, each rod will encounter itself
+		Nth = nObj;
 		for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
-			for (cellmapIterator nbr=cellmap.begin(); nbr!=cellmap.end(); nbr++) {
-				s += cos(2.*(it->second->angle - nbr->second->angle));
-				t += sin(2.*(it->second->angle - nbr->second->angle));
-				Nth++;
-			}
+			s += cos(2.*(it->second->angle));
+			t += sin(2.*(it->second->angle));
 		}
 	}
 
@@ -396,11 +395,11 @@ template <> void Master<Rod>::InitMap()
 			r->angle = 0.;
 			UpdateCellIdx(r);
 			UpdateCellNeighbors(r);
-			if (0) {
+			if (!shape.compare("iso")) {
 				// Random dist
 				th = 2.*M_PI*distribution(generator);
 			}
-			if (1) {
+			if (!shape.compare("T")) {
 				// Generating T configuration
 				x = c.x;
 				y = c.y;
@@ -425,7 +424,7 @@ template <> void Master<Rod>::InitMap()
 				if (ny>Ny-3) th = M_PI*0.5 + dth;
 				if (ny<2) th = M_PI*0.5 + dth;
 			}
-			if (0) {
+			if (!shape.compare("X")) {
 				// Generating X configuration
 				x = c.x;
 				y = c.y;
@@ -612,57 +611,28 @@ template <typename T> void Master<T>::PrintMap() {
 	cout << endl;
 };
 
-template <typename T> void Master<T>::WriteSweep(string fname, string path) {
-	
-	if (onefile) {
-		fout.open(path+fname, ios::out | ios::app);
-		if (!fout.is_open()) {
-			cout << "Could not open file for writing!" << endl;
-			return;
+template <typename T> void Master<T>::WriteSweep(string fname) {
+	fout.open(fname, ios::out | ios::app);
+	if (!fout.is_open()) {
+		cout << "Could not open file for writing!" << endl;
+		return;
+	}
+	for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
+		fout << it->second->ID << " " 
+				 << it->second->cellIdx << " " 
+				 << it->second->rc.x << " " 
+				 << it->second->rc.y << " " 
+				 << it->second->angle << " ";
+		for(Vec<double> v : it->second->vert) {
+			fout << v.x << " " << v.y << " ";
 		}
-		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
-			fout << it->second->ID << " " 
-					 << it->second->cellIdx << " " 
-					 << it->second->rc.x << " " 
-					 << it->second->rc.y << " " 
-					 << it->second->angle << " ";
-			for(Vec<double> v : it->second->vert) {
-				fout << v.x << " " << v.y << " ";
-			}
-			for(int i=0; i<8; i++) {
-				fout << it->second->neighborCells[i] << " ";
-			}
-			fout << endl;
+		for(int i=0; i<8; i++) {
+			fout << it->second->neighborCells[i] << " ";
 		}
 		fout << endl;
-		fout.close();
-	} else {
-		// Need to account for zeros in string
-		string sID;
-		int order = int(log10(sweepCount));
-		int nzero = 7 - order;
-		for (int o=0; o<nzero; o++) {
-			sID.append("0");
-		}
-		sID.append(to_string(sweepCount));
-		fout.open(path+fname+"_"+sID, ios::out | ios::trunc);
-
-		for (cellmapIterator it = cellmap.begin(); it != cellmap.end(); it++) {
-			fout << it->second->ID << " " 
-					 << it->second->cellIdx << " " 
-					 << it->second->rc.x << " " 
-					 << it->second->rc.y << " " 
-					 << it->second->angle << " ";
-			for(Vec<double> v : it->second->vert) {
-				fout << v.x << " " << v.y << " ";
-			}
-			for(int i=0; i<8; i++) {
-					fout << it->second->neighborCells[i] << " ";
-			}
-			fout << endl;
-		}
-		fout.close();
 	}
+	fout << endl;
+	fout.close();
 };
 	
 
