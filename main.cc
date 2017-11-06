@@ -44,15 +44,19 @@ int main(int argc, const char *argv[])
 						double l = master.EvalOrder();
 						cout << "Lambda " << l << endl;
 						if (l>0.5) {
-							cout << "Lambda exceeded 0.5, exiting run" << endl;
-							i = simparams->nProc;
+							cout << "Lambda exceeded 0.5, resetting map" << endl;
+							master.ReInitializeSim();
+							while (!master.noOverlap) master.MCSweep();
+							for (int ii=0; ii<simparams->nEquil; ii++) master.MCSweep();
 						}
 					}
-
 				}
 			}
 		}
 	}
+
+
+
 	auto dur = duration_cast<seconds>(myclock::now() - beginning).count();
 	cout << endl << "Processing time: " << dur << " seconds" <<  endl;
 

@@ -35,7 +35,6 @@ private:
 	double cellWidth;
 	double length;
 	double molWidth;
-	multimap<int, Obj<T>*> cellmap;
 	Obj<T> *ghost;
 	double transMag, PtransMag;
 	double angMag, PangMag;
@@ -67,13 +66,12 @@ public:
 		shape(myparams->shape) {}
  
 	bool noOverlap;
-	bool finalSweep;
 	double L;
+	multimap<int, Obj<T>*> cellmap;
 
 	void InitializeSim() {
 		sweepCount = 0;
 		noOverlap = false;
-		finalSweep = false;
 		ghost = new Obj<T>(-1);
 		// Pre-Processing jiggle params
 		//angMag = 0.2;
@@ -84,6 +82,21 @@ public:
 
 		InitMap();
 	}
+
+
+	void ReInitializeSim() {
+		cellmap.clear();
+		noOverlap = false;
+		// Pre-Processing jiggle params
+		//angMag = 0.2;
+		//double transFactor = 0.1;
+		angMag = 0.002;
+		double transFactor = 0.02;
+		transMag = transFactor*dr;
+
+		InitMap();
+	}
+
 
 	void MCSweep()
 	{
@@ -133,6 +146,7 @@ private:
 	bool InitOverlapCheck(Obj<T> *);
 	void Sweep();
 	void InitMap();
+	void ReInitMap();
 	void UpdateCellIdx(Obj<T> *);
 	void UpdateCellNeighbors(Obj<T> *);
 	void RandRotate(Obj<T> *);
