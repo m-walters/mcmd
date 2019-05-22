@@ -1,0 +1,16 @@
+Nx = 20;
+Ny = 20;
+cellNx = 5;
+cellNy = 5; // keep in mind we want square cells
+boxEdge = 16.;
+length = 3;
+AR = 1;
+sweepEval = 50;
+sweepLimit = 100000;
+nEquil = 0;
+nProc = 500000;
+sweepEvalProc = 100;
+maxAttempts = 1;
+transFactor = 0.04;
+angMag = 0.04; // fraction of pi
+onefile = 1; // bool, use 1 or 0

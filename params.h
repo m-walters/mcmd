@@ -12,12 +12,10 @@ struct Params
 	int cellNy;
 	int AR;
 	double length;
-	int sweepEval;
-	int sweepLimit;
+	int crossEval;
 	int nProc;
 	int nEquil;
-	int sweepEvalProc;
-	int maxAttempts;
+	int sweepEval;
 	double boxEdge;
 	double transFactor;
 	double angMag;
@@ -32,6 +30,7 @@ struct Params
 	int nObj;
 	double transMag;
 	int nCell;
+	bool printUncross;
 	std::string shape;
 
 	Params(std::string cnfFile) {
@@ -43,15 +42,15 @@ struct Params
 		cellNy = prms.getValueOfKey<int>("cellNy");
 		AR = prms.getValueOfKey<int>("AR");
 		length = prms.getValueOfKey<double>("length");
-		sweepEval = prms.getValueOfKey<int>("sweepEval");
-		sweepLimit = prms.getValueOfKey<int>("sweepLimit");
+		crossEval = prms.getValueOfKey<int>("crossEval");
+		nEquil = prms.getValueOfKey<int>("nEquil");
 		nProc = prms.getValueOfKey<int>("nProc");
-		sweepEvalProc = prms.getValueOfKey<int>("sweepEvalProc");
-		maxAttempts = prms.getValueOfKey<int>("maxAttempts");
+		sweepEval = prms.getValueOfKey<int>("sweepEval");
 		boxEdge = prms.getValueOfKey<double>("boxEdge");
 		transFactor = prms.getValueOfKey<double>("transFactor");
 		angMag = prms.getValueOfKey<double>("angMag");
 		onefile = prms.getValueOfKey<int>("onefile");
+		printUncross = prms.getValueOfKey<bool>("printUncross");
 		shape = prms.getValueOfKey<std::string>("shape");
 		
 
@@ -77,7 +76,7 @@ struct Params
 
 	void writeParams(string fname) {
 		ofstream fout;
-		fout.open(fname, ios::out | ios::app);
+		fout.open(fname, ios::out | ios::app | ios::binary);
 		if (!fout.is_open()) {
 			cout << "Could not open file for writing!" << endl;
 			return;
@@ -101,11 +100,12 @@ struct Params
 				 << "length " << length << "|"
 				 << "transFactor " << transFactor << "|"
 				 << "transMag " << transMag  << "|"
-				 << "sweepLimit " << sweepLimit << "|"
-				 << "sweepEval " << sweepEval << "|"
+				 << "angMag " << angMag << "|"
+				 << "crossEval " << crossEval << "|"
+				 << "printUncross " << printUncross << "|"
 				 << "nEquil " << nEquil << "|"
 				 << "nProc " << nProc << "|"
-				 << "sweepEvalProc " << sweepEvalProc << "|"
+				 << "sweepEval " << sweepEval << "|"
 				 << "Rho " << rho << "|"
 				 << "ReducedRho " << redRho << endl;
 		fout.close();
@@ -131,11 +131,12 @@ struct Params
 				 << "length " << length << endl
 				 << "transFactor " << transFactor << endl
 				 << "transMag " << transMag  << endl
-				 << "sweepLimit " << sweepLimit << endl
-				 << "sweepEval " << sweepEval << endl
+				 << "angMag " << angMag << endl
+				 << "crossEval " << crossEval << endl
+				 << "printUncross " << printUncross << endl
 				 << "nEquil " << nEquil << endl
 				 << "nProc " << nProc << endl
-				 << "sweepEvalProc " << sweepEvalProc << endl
+				 << "sweepEval " << sweepEval << endl
 				 << endl
 				 << "Rho " << rho << endl
 				 << "Reduced rho " << redRho << endl;

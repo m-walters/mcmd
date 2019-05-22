@@ -1,0 +1,66 @@
+@book{Landau,
+ author = {Landau, David and Binder, Kurt},
+ title = {A Guide to Monte Carlo Simulations in Statistical Physics},
+ year = {2005},
+ isbn = {0521842387},
+ publisher = {Cambridge University Press},
+ address = {New York, NY, USA},
+}
+@article{G2016Finite,
+  title={Finite particle size drives defect-mediated domain structures in strongly confined colloidal liquid crystals},
+  author={Garlea, Ioana C. and Mulder, Pieter and Alvarado, Jos¨¦ and Dammone, Oliver and Aarts, Dirk G. A. L. and Lettinga, M. Pavlik and Koenderink, Gijsje H. and Mulder, Bela M.},
+  journal={Nature Communications},
+  volume={7},
+  pages={12112},
+  year={2016},
+}
+
+@article{Galanis2006Spontaneous,
+  title={Spontaneous Patterning of Confined Granular Rods},
+  author={Galanis, Jennifer and Harries, Daniel and Sackett, Dan and Losert, Wolfgang and Nossal, Ralph},
+  journal={Physical Review Letters},
+  volume={96},
+  number={2},
+  pages={028002},
+  year={2006},
+}
+
+@article{Jian2006Visualization,
+  title={Visualization of liquid crystal director fields within carbon nanotube cavities},
+  author={Jian, Kengqing and Hurt, Robert H. and Sheldon, Brian W. and Crawford, Gregory P.},
+  journal={Applied Physics Letters},
+  volume={88},
+  number={16},
+  pages={269},
+  year={2006},
+}
+
+@article{Silva2011Self,
+  title={Self-organized patterns of actin filaments in cell-sized confinement},
+  author={Silva, Marina Soares e and Alvarado, Jos¨¦ and Nguyen, Jeanette and Georgoulia, Nefeli and Mulder, Bela M. and Koenderink, Gijsje H.},
+  journal={Soft Matter},
+  volume={7},
+  number={22},
+  pages={10631-10641},
+  year={2011},
+}
+
+@article{Ondris1993Curvature,
+  title={Curvature-induced configuration transition in confined nematic liquid crystals},
+  author={Ondris-Crawford, R. J. and Crawford, G. P. and Zumer, S and Doane, J. W.},
+  journal={Physical Review Letters},
+  volume={70},
+  number={2},
+  pages={194},
+  year={1993},
+}
+
+@article{De2009Topological,
+  title={Topological defects in a two-dimensional liquid crystal confined in a circular nanocavity},
+  author={de las Heras, D and Velasco, E and Mederos, L},
+  journal={Physical Review E},
+  volume={79},
+  number={1},
+  pages={061703},
+  year={2009},
+}

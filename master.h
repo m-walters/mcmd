@@ -26,10 +26,9 @@ private:
 
 	int cellNx, cellNy, nCell;
 	int Nx, Ny, nObj;
-	int sweepCount, sweepEval, sweepLimit;
-	int sweepEvalProc;
+	int sweepCount, crossEval;
+	int sweepEval;
 	int nFailure;
-	int maxAttempts;
 	double dr;
  	Vec<double> box;
 	double cellWidth;
@@ -51,10 +50,8 @@ public:
 		Nx(myparams->Nx),
 		Ny(myparams->Ny),
 		nObj(myparams->nObj),
+		crossEval(myparams->crossEval),
 		sweepEval(myparams->sweepEval),
-		sweepLimit(myparams->sweepLimit),
-		sweepEvalProc(myparams->sweepEvalProc),
-		maxAttempts(myparams->maxAttempts),
 		dr(myparams->dr),
 		box(myparams->box),
 		cellWidth(myparams->cellWidth),
@@ -98,20 +95,16 @@ public:
 	}
 
 
-	void MCSweep()
+	void MCSweep(int sweepCount)
 	{
 		nFailure = 0;
-		sweepCount += 1;
 		Sweep();
 		if (!noOverlap) {
-			if (sweepCount%sweepEval == 0) {
+			if (sweepCount%crossEval == 0) {
 				int o = TotalOverlap();
-				if (sweepCount%400 == 0) {
-					cout << "Sweep " << sweepCount << ", " 
-							 << (int)100*(double(sweepCount)/sweepLimit) << "\% of sweep limit" << endl;
-					cout << "Overlaps: " << o << ", Failure rate: " 
-							 << nFailure/double(nObj) << endl;
-				}
+				cout << "Sweep " << sweepCount
+						 << ", Overlaps: " << o 
+						 << ", Failure rate: " << nFailure/double(nObj) << endl;
 				if (o == 0) {
 					noOverlap = true;
 					angMag = PangMag;
@@ -119,7 +112,7 @@ public:
 				}
 			}
 		} else {
-			if (sweepCount%sweepEvalProc == 0) {
+			if (sweepCount%sweepEval == 0) {
 				cout << "Sweep " << sweepCount << ", failure rate: " 
 						 << nFailure/double(nObj) << endl;
 			}
@@ -132,6 +125,7 @@ public:
 		return ang;
 	};
 
+	void Sweep();
 	void testfunc();
 	void PrintMap();
 	void WriteSweep(string fname);
@@ -144,7 +138,7 @@ private:
 	bool BoundaryClear(Obj<T> *);
 	bool isOverlap(Obj<T> *, Obj<T> *);
 	bool InitOverlapCheck(Obj<T> *);
-	void Sweep();
+	//void Sweep();
 	void InitMap();
 	void ReInitMap();
 	void UpdateCellIdx(Obj<T> *);
@@ -229,7 +223,7 @@ template <typename T> double Master<T>::EvalOrder()
 			}
 		}
 	}
-	if (1) {
+	if (0) {
 		s = 0., t = 0.; // When iterating, each rod will encounter itself
 		Nth = nObj;
 		for (cellmapIterator it=cellmap.begin(); it!=cellmap.end(); it++) {
@@ -402,23 +396,46 @@ template <> void Master<Rod>::InitMap()
 			c = c+shift;
 			// Jiggle xy a bit
 			c.y += 0.0001*(2.*distribution(generator)-1.);
-			c.x += 0.00011*(2.*distribution(generator)-1.);
-			r->rc = c;
-			r->vert[0].set_values(c.x, c.y + length*0.5);
-			r->vert[1].set_values(c.x, c.y - length*0.5);
-			r->angle = 0.;
-			UpdateCellIdx(r);
-			UpdateCellNeighbors(r);
+			c.x += 0.0001*(2.*distribution(generator)-1.);
+
+			x = c.x;
+			y = c.y;
+			dth = 0.1*(2.*distribution(generator) - 1.);
+
 			if (!shape.compare("iso")) {
 				// Random dist
 				th = 2.*M_PI*distribution(generator);
 			}
+			if (!shape.compare("D")) {
+				// D config
+				th = -M_PI*0.25 + dth;
+
+				if (x - y > 0.1*box.x) {
+					th = (x+y)/box.x*M_PI*0.35 + -M_PI*0.25 + dth;
+				}
+				if (y - x > 0.1*box.x) {
+					th = -(x+y)/box.x*M_PI*0.35 + -M_PI*0.25 + dth;
+				}
+				
+				// The following adjusts the wall and corner rods "properly"
+				if ((x>y+0.1*box.y) && (x>0.4*box.x))
+					th = 0 + dth; // along right wall
+				if ((y-0.1*box.y>x) && (x<-0.4*box.x))
+					th = 0 + dth; // along left wall
+				if ((y<x-0.1*box.x) && (y<-0.4*box.y))
+					th = M_PI*0.5 + dth;
+				if ((y>x+0.1*box.x) && (y>0.4*box.y))
+					th = M_PI*0.5 + dth;
+				// handle the corners
+				if ((fabs(x+y) < 0.1*box.x) && (fabs(x) > 0.4*box.x))
+					th = M_PI*0.25 + dth;
+				if ((fabs(x-y) < 0.1*box.x) && (fabs(x) > 0.4*box.x))
+					th = -M_PI*0.25 + dth;
+
+			}
 			if (!shape.compare("T")) {
 				// Generating T configuration
-				x = c.x;
-				y = c.y;
 				double thFactor;
-				dth = 0.1*(2.*distribution(generator) - 1.);
 				if ((x>y) && (x<-y)) {
 					thFactor = 0.5*(y-x)/y; 
 					th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
@@ -440,10 +457,7 @@ template <> void Master<Rod>::InitMap()
 			}
 			if (!shape.compare("X")) {
 				// Generating X configuration
-				x = c.x;
-				y = c.y;
 				double thFactor;
-				dth = 0.1*(2.*distribution(generator) - 1.);
 				if ((x>y) && (x>-y)) {
 					thFactor = 1. - (x-y)/x;
 					th = -M_PI*0.25*thFactor + dth;
@@ -469,22 +483,169 @@ template <> void Master<Rod>::InitMap()
 					r->diag = true;
 				}
 				if ((nx==0) && (ny==0)) {
-					r->rc.x += length*0.3;
-					r->rc.y += length*0.3;
+					c.x += length*0.3;
+					c.y += length*0.3;
 				}
 				if ((nx==Nx-1) && (ny==0)) {
-					r->rc.x -= length*0.3;
-					r->rc.y += length*0.3;
+					c.x -= length*0.3;
+					c.y += length*0.3;
 				}
 				if ((nx==0) && (ny==Ny-1)) {
-					r->rc.x += length*0.3;
-					r->rc.y -= length*0.3;
+					c.x += length*0.3;
+					c.y -= length*0.3;
 				}
 				if ((nx==Nx-1) && (ny==Ny-1)) {
-					r->rc.x -= length*0.3;
-					r->rc.y -= length*0.3;
+					c.x -= length*0.3;
+					c.y -= length*0.3;
 				}
 			}
+			if (!shape.compare("L")) {
+				// Generating L configuration
+				// Like the X, but vertical in, say, the middle quarter 
+				// Also make the curved regions "think" they are
+				// approaching the center of the X shape
+				double thFactor;
+				double ythresh = box.y/8.;
+				if (fabs(y) < ythresh) {
+					th = dth;
+				} else {
+					if (y>0.) y -= ythresh;
+					if (y<0.) y += ythresh;
+					y *= 4./3.*0.5*box.y;
+
+					if ((x>y) && (x>-y)) {
+						thFactor = 1. - (x-y)/x;
+						th = -M_PI*0.25*thFactor + dth;
+					}
+					if ((x>y) && (x<-y)) {
+						thFactor = 0.5*(y-x)/y; 
+						th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
+					}
+					if ((x<y) && (x>-y)) {
+						thFactor = 0.5*(y-x)/y; 
+						th = -M_PI*0.25 - M_PI*0.5*thFactor + dth;
+					}
+					if ((x<y) && (x<-y)) {
+						thFactor = (x-y)/x;
+						th = -M_PI*0.25 + M_PI*0.25*thFactor + dth;
+					}
+				}
+				// Adjust corner rods
+				if ((nx==0) && (ny==0)) {
+					c.x += length*0.3;
+					c.y += length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==0)) {
+					c.x -= length*0.3;
+					c.y += length*0.3;
+				}
+				if ((nx==0) && (ny==Ny-1)) {
+					c.x += length*0.3;
+					c.y -= length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==Ny-1)) {
+					c.x -= length*0.3;
+					c.y -= length*0.3;
+				}
+			}
+			if (!shape.compare("U")) {
+				// Generating U configuration
+				double thFactor;
+				double ythresh = box.y*0.5 - 2.2*dr;
+
+				if (y > ythresh) {
+					if (y>fabs(x)) th = M_PI*0.5 + dth;
+					if (y<fabs(x)) th = dth;
+					if (nx == ny || nx == ny+1) {
+						r->diag = true;
+						th = M_PI*0.75 + dth;
+					}
+					if ((nx+ny)==(Ny-1) || (nx+ny+1)==(Ny-1)) {
+						th = M_PI*0.25 + dth;
+						r->diag = true;
+					}
+					if (nx==0 or nx==Nx-1) th = dth;
+				} else {
+					double yy = y - ythresh; // normalize to area below ythresh
+					double halfbox = box.x*0.5;
+					yy *= 1./(halfbox+ythresh)*halfbox;
+
+					if (x>0.25*halfbox) {
+						thFactor = 1. - (0.8*x - 0.2*yy*yy/halfbox)/halfbox;
+						th = M_PI*0.5*thFactor + dth;
+					}
+					else if (x<-0.25*halfbox) {
+						thFactor = 1. - (-0.8*x - 0.2*yy*yy/halfbox)/halfbox;
+						th = -M_PI*0.5*thFactor + dth;
+					}
+					else {
+						th = M_PI*0.5 + dth;
+					}
+
+				}
+				// Adjust middle rods
+				if (fabs(x) < 0.1*box.x ) { 
+					th = M_PI/2 + dth;
+				}
+
+				// Top and bottom walls
+				if ((y<-0.4*box.y))
+					th = M_PI*0.5 + dth;
+				if ((y>0.4*box.y))
+					th = M_PI*0.5 + dth;
+				/*
+				if ((x<-0.44*box.x))
+					th = dth;
+				if ((x>0.44*box.x))
+					th = dth;
+				*/
+				// Adjust corner rods
+				if ((nx==0) && (ny==0)) {
+					th = -M_PI*0.25 + dth;
+					c.x += length*0.3;
+					c.y += length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==0)) {
+					th = M_PI*0.25 + dth;
+					c.x -= length*0.3;
+					c.y += length*0.3;
+				}
+				if ((nx==0) && (ny==Ny-1)) {
+					th = M_PI*0.25 + dth;
+					c.x += length*0.3;
+					c.y -= length*0.3;
+				}
+				if ((nx==Nx-1) && (ny==Ny-1)) {
+					th = -M_PI*0.25 + dth;
+					c.x -= length*0.3;
+					c.y -= length*0.3;
+				}
+			}
+			//
+			// The following adjusts the wall and corner rods "properly"
+			// Taken from "D" config
+			/*
+			if ((x>y+0.1*box.y) && (x>0.4*box.x))
+				th = 0 + dth; // along right wall
+			if ((y-0.1*box.y>x) && (x<-0.4*box.x))
+				th = 0 + dth; // along left wall
+			if ((y<x-0.1*box.x) && (y<-0.4*box.y))
+				th = M_PI*0.5 + dth;
+			if ((y>x+0.1*box.x) && (y>0.4*box.y))
+				th = M_PI*0.5 + dth;
+			*/
+			// handle the corners
+			if ((fabs(x+y) < 0.1*box.x) && (fabs(x) > 0.4*box.x))
+				th = M_PI*0.25 + dth;
+			if ((fabs(x-y) < 0.1*box.x) && (fabs(x) > 0.4*box.x))
+				th = -M_PI*0.25 + dth;
+
+			r->rc = c;
+			r->vert[0].set_values(c.x, c.y + length*0.5);
+			r->vert[1].set_values(c.x, c.y - length*0.5);
+			r->angle = 0.;
+			UpdateCellIdx(r);
+			UpdateCellNeighbors(r);
 			th = normalizeAngle(th);
 			r->RotateVerts(th);
 			r->angle = th;
@@ -626,7 +787,7 @@ template <typename T> void Master<T>::PrintMap() {
 };
 
 template <typename T> void Master<T>::WriteSweep(string fname) {
-	fout.open(fname, ios::out | ios::app);
+	fout.open(fname, ios::out | ios::app | ios::binary);
 	if (!fout.is_open()) {
 		cout << "Could not open file for writing!" << endl;
 		return;
@@ -711,7 +872,7 @@ template <typename T> void Master<T>::WritePixelImg() {
 	}
 
 
-	fout.open("output/pixelImg", ios::out | ios::trunc);
+	fout.open("output/pixelImg", ios::out | ios::trunc | ios::binary);
 	for (int x=0; x<Nx; x++) {
 		for (int y=0; y<Ny; y++) {
 			fout << x << " " << y << " " << avgTh[x][y] << " " << S[x][y] << " " << nthtmp[x][y] << endl;
@@ -719,9 +880,5 @@ template <typename T> void Master<T>::WritePixelImg() {
 	}
 		
 }
-
-
-
-
 
 #endif

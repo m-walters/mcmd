@@ -1,0 +1,70 @@
+\providecommand*{\mcitethebibliography}{\thebibliography}
+\csname @ifundefined\endcsname{endmcitethebibliography}
+{\let\endmcitethebibliography\endthebibliography}{}
+\begin{mcitethebibliography}{6}
+\providecommand*{\natexlab}[1]{#1}
+\providecommand*{\mciteSetBstSublistMode}[1]{}
+\providecommand*{\mciteSetBstMaxWidthForm}[2]{}
+\providecommand*{\mciteBstWouldAddEndPuncttrue}
+  {\def\EndOfBibitem{\unskip.}}
+\providecommand*{\mciteBstWouldAddEndPunctfalse}
+  {\let\EndOfBibitem\relax}
+\providecommand*{\mciteSetBstMidEndSepPunct}[3]{}
+\providecommand*{\mciteSetBstSublistLabelBeginEnd}[3]{}
+\providecommand*{\EndOfBibitem}{}
+\mciteSetBstSublistMode{f}
+\mciteSetBstMaxWidthForm{subitem}
+{(\emph{\alph{mcitesubitemcount}})}
+\mciteSetBstSublistLabelBeginEnd{\mcitemaxwidthsubitemform\space}
+{\relax}{\relax}
+
+\bibitem[Silva \emph{et~al.}(2011)Silva, Alvarado, Nguyen, Georgoulia, Mulder,
+  and Koenderink]{Silva2011Self}
+M.~S.~e. Silva, J.~Alvarado, J.~Nguyen, N.~Georgoulia, B.~M. Mulder and G.~H.
+  Koenderink, \emph{Soft Matter}, 2011, \textbf{7}, 10631--10641\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Galanis \emph{et~al.}(2006)Galanis, Harries, Sackett, Losert, and
+  Nossal]{Galanis2006Spontaneous}
+J.~Galanis, D.~Harries, D.~Sackett, W.~Losert and R.~Nossal, \emph{Physical
+  Review Letters}, 2006, \textbf{96}, 028002\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Garlea \emph{et~al.}(2016)Garlea, Mulder, Alvarado, Dammone, Aarts,
+  Lettinga, Koenderink, and Mulder]{G2016Finite}
+I.~C. Garlea, P.~Mulder, J.~Alvarado, O.~Dammone, D.~G. A.~L. Aarts, M.~P.
+  Lettinga, G.~H. Koenderink and B.~M. Mulder, \emph{Nature Communications},
+  2016, \textbf{7}, 12112\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[de~las Heras \emph{et~al.}(2009)de~las Heras, Velasco, and
+  Mederos]{De2009Topological}
+D.~de~las Heras, E.~Velasco and L.~Mederos, \emph{Physical Review E}, 2009,
+  \textbf{79}, 061703\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Ondris-Crawford \emph{et~al.}(1993)Ondris-Crawford, Crawford, Zumer,
+  and Doane]{Ondris1993Curvature}
+R.~J. Ondris-Crawford, G.~P. Crawford, S.~Zumer and J.~W. Doane, \emph{Physical
+  Review Letters}, 1993, \textbf{70}, 194\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Landau and Binder(2005)]{Landau}
+D.~Landau and K.~Binder, \emph{A Guide to Monte Carlo Simulations in
+  Statistical Physics}, Cambridge University Press, New York, NY, USA,
+  2005\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\end{mcitethebibliography}

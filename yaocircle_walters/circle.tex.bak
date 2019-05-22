@@ -1,0 +1,347 @@
+\documentclass[prl,twocolumn,preprintnumbers,reprint]{revtex4}
+\usepackage{amsmath,amssymb}
+
+
+\usepackage{overpic,color}
+\newcommand{\ud}{\,\emph{d}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\pp}{\partial}
+\newcommand{\intn}{\!\!\int\!}
+\newcommand{\bu}{{\bf u}}
+\newcommand{\br}{{\bf r}}
+\newcommand{\rd}{{\rm d}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\en}{\end{equation}}
+
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts}
+\usepackage{graphicx}% Include figure files
+\usepackage{subfigure}
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{bm}% bold math
+\usepackage{hyperref}
+\usepackage{empheq}
+\usepackage{natbib}
+\usepackage{color}
+\newcommand*{\citen}{}% generate error, if `\citen` is already in use
+\DeclareRobustCommand*{\citen}[1]{%
+  \begingroup
+    \romannumeral-`\x % remove space at the beginning of \setcitestyle
+    \setcitestyle{numbers}%
+    \cite{#1}%
+  \endgroup
+}
+
+\begin{document}
+%\preprint{Draft version 0.94}
+
+\title{Structures in two-dimensional liquid crystals confined in a circle
+}
+
+\author{Xiaomei Yao}
+\affiliation {School of Chemistry, Beihang University, Beijing 100191, P.R. China}
+\date{\today}
+\author{Hui Zhang$^*$}
+\affiliation {School of Mathematical Sciences, Beijing Normal
+University, Beijing 100875, P.R. China  }
+\date{\today}
+\author{Jeff Z. Y. Chen\footnote{Email: jeffchen@uwaterloo.ca}}
+\affiliation{ Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario, Canada, N2L 3G1 }
+\date{\today}
+
+\begin{abstract}
+
+\end{abstract}
+
+\maketitle
+
+\clearpage
+
+
+
+
+\section{Structures for rods in confinements}
+\subsection{Circular confinement}
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.98\columnwidth]{eps/circle1Ch.eps}
+\caption{Nematic defect structures found from the solutions to the extended Onsager model for rods in circular confinement. Every structure is visualized by five methods: nematic-director field, fluid density variation $\phi$, main-axis orientational order parameter $\Lambda$, $S$ and $T$. The reduced parameters used to produce these structures are: $[L^2 \rho_0, R/L]  = [10, 5]$ for (a), (e), $[8, 8]$ for (b)-(d), and $[6, 8]$ for (f). The blue, yellow, green and orange circular points label the defect locations of $-1/2$, $-1$, $+1/2$ and $+1$ winding numbers, respectively. The green and purple lines are +1/2 and +2 defects.} \label{P1}
+\end{figure}
+
+Here, we list some stable or metastable structures that produced by the LCs system confined in a circle. Rods in Horizontal (H) are almost arranged in a uniform direction except those near the boundary. Two +1/2 defect points are located on both sides close to the boundary. Either $R/L$ or $L^2\rho_0$ increases, the two defect points will go farther from each other. H state is organized by Silva \emph{et al} when actin filaments were in quasi-2D confinement\cite{Silva2011Self}, seen in Fig. \ref{exp}(a). Galanis \emph{et al} also observed H when rod-shaped granular materials are vibrated vertically in a quasi-2D containers\cite{Galanis2006Spontaneous}. H is also experimentally observed by fd-virus rods(shown in Fig. \ref{exp}(c)) and simulated by MC(shown in Fig. \ref{exp}(b))\cite{G2016Finite}. In O-shaped(O) states, rods behave certain flexible and walk round and round along the boundary like many circles, which cause a +1 defect point in the center. O could exist in almost all parameters area of $R/L$ and $L^2\rho_0$, and when $R/L\lesssim2.3$, $L^2\rho_0\lesssim7.0$, O is the only state and it is the stable one naturally. Ondris-Crawford predict O state when rods are in cylindrical environments when parallel anchoring is preferred, show in Fig. \ref{exp}(d). W is a structure like a watermelon with circles near the boundary and radial state  inside. This causes a -1 defect point in the center and a +2 defect circle around the demarcation. W could exist when $R/L\gtrsim5$. Moreover, when $L^2\rho_0\gtrsim9$, W is the most stable state shown in Fig \ref{P3}. Vrille (V) is a intermediate state from O to W with rods arranged spirally in the inner region. Like O state, a +1 defect point is located in the central position. In most parameters region, the free energy of V is also between O and W. U state is a U-shaped structure with a 1/2 defect point in the center and a 1/2 defect line on the side. T state is like a triangle with three 1/2 defect points at the apexes and a -1 defect in the center. According to the geometry topology of a circle, the values of defects add up to +1 for each structure.
+
+In two dimensional circular nanocavity, Heras considered homeotropic anchoring conditions and predict radial(R) state\cite{De2009Topological}, shown in Fig. \ref{exp}(e), which is similar with our W except for the arrangement near the boundary. Here as we set the parallel anchoring condition, rods close to the walls aligned parallel with the wall and in the center array radially. Competition between the two orientations produces the defect circle in the border. W is more stable when $R/L$ or $L^2\rho_0$ is larger and the rind will grow thinner.
+
+Fixed $[L^2\rho_0,R/L]=[8.0,8.0]$, we focus on the energy distribution of O,W and V with respect to $r/R$ in Fig. \ref{en}. The energy changes continuously over $r/R$. For $r/R=0$, it is a +1 defect point in O state and the density is very low here, but it is a -1 defect point in both W and V, the energy is relatively higher.
+
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.8\columnwidth]{eps/en.eps}
+\caption{The energy distribution of O,W and V with respect to $r/R$ when $[L^2\rho_0,R/L]=[8.0,8.0]$ are fixed. } \label{en}
+\end{figure}
+
+\subsection{Annular confinement}
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.98\columnwidth]{eps/circle2Ch.eps}
+\caption{Nematic defect structures found from the solutions to the extended Onsager model for rods in annular confinement with $R^\prime:R=0.2$. Every structure is visualized by five methods: nematic-director field, fluid density variation $\phi$, main-axis orientational order parameter $\Lambda$, $S$ and $T$. The reduced parameters used to produce these structures are: $[L^2 \rho_0, R/L]  = [10, 5]$ for (a)-(c), (e), $[8, 8]$ for (d), (g), and $[6, 8]$ for (f). The colorbar and the meaning of colored circles are the same as in Fig. \ref{P1}. In addition, the black line is a -2 defect.} \label{Q1}
+\end{figure}
+
+Such as the above subsection, we talk about the structures when rods are in a annular confinement. Set the inner radius to be $R'$ and $R^\prime/R=0.2$. In Fig. \ref{Q1}, H$^\prime$, O$^\prime$,V$^\prime$,W$^\prime$,C$^\prime$ and T$^\prime$ are similar states to H,O,V,W,C and T in Fig. \ref{P1}. G\^{a}rlea \emph{et al} also reported O$^\prime$ and T$^\prime$ when they confined fd-virus rods in annular microchambers\cite{G2016Finite}, showed in Fig.\ref{exp}(h) and (g). They also simulate T$^\prime$ by MC, seen in Fig. \ref{exp}(f). S is like a sugar loaf and can be found when $L^2\rho_0\lesssim9, R/L\gtrsim8$ with higher free energy than other states. There is no defect in S state. As the annular region is formed by a little circle dig out of a big circle, the total values of defects add up to 0 for each structure.
+
+
+
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.98\columnwidth]{eps/exp.eps}
+\caption{Comparison to nematic textures found experimentally and theoretically. They are from (a) Ref.\cite{Ondris1993Curvature}(prediction); (b) Ref.\cite{Silva2011Self}(experiment on actin filaments); (c),(f) Ref.\cite{G2016Finite}(solution to MC); (d) (g) (h) Ref.\cite{G2016Finite}(experiments on fd-virus rods); (e) Ref.\cite{De2009Topological}(possible structure with homeotropic anchoring conditions). } \label{exp}
+\end{figure}
+
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.8\columnwidth]{eps/circle_phase.eps}
+\caption{Phase diagram for rods confined in a circle. It contains two system parameters: the reduced density $L^2\rho_0$ and the ratio $R/L$.} \label{P3}
+\end{figure}
+
+
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.8\columnwidth]{eps/circle2_phase.eps}
+\caption{Phase diagram for rods in Annular confinements when $R^\prime:R=0.2$. It contains two system parameters: the reduced density $L^2\rho$ and the ratio $R/L$.} \label{Q3}
+\end{figure}
+
+\begin{figure}[!t]\centering
+\includegraphics[width = 0.8\columnwidth]{eps/circle2_phase_Rprime.eps}
+\caption{Phase diagram for rods in Annular confinements when $R/L=8$ is fixed.} \label{Q4}
+\end{figure}
+
+For annular with different value of $R^\prime/R$, O$^\prime$ is the most common one but others maybe disappear when $R^\prime/R$ increases. When $R^\prime/R\gtrsim0.6$, O$^\prime$ is the only structure that exists. In Fig. \ref{Q4}, we set $L^2\rho_0=8$ and talk about the phase diagram with regard to $R^\prime/R$ and $R/L$. While $R^\prime/R<0.5$ and $L^2\rho_0$ is relatively high, W$^\prime$ is the most stable one with lowest free energy. With the increase of $R^\prime/R$, W$^\prime$ could not exist and O$^\prime$ turn to be the stable one.
+
+\section{Free energy and phase diagrams}
+Of course the central focus is the density distribution function $\rho_c(\br,\bu)$ which characterizes the probability density of finding the centers-of-mass of the rodlike molecules at a spatial position specified by the vector $\br$ with the condition that the rods are pointing at the direction specified by a unit vector $\bu$. Here we assume that $\rho_c(\br,\bu)$ is normalized to $N$. The extended Onsager model which states the free energy of the system is a functional
+\begin{equation}
+\begin{aligned}
+\label{Fdef}
+ \beta &F=\intn\rho_c(\mathbf{r},\mathbf{u}) \ln [L^2\rho_c(\mathbf{r},\mathbf{u}) ] {\rm d}\mathbf{r} {\rm d}\mathbf{u}\\
+&+ \frac{1}{2}\int\rho_c(\mathbf{r},\mathbf{u}) \omega(\mathbf{r},\mathbf{u};\mathbf{r}^\prime, \mathbf{u}^\prime)\rho_c(\mathbf{r}^\prime, \mathbf{u}^\prime) \;\dd\mathbf{r} \dd\mathbf{u} \dd\mathbf{r}^\prime \dd\mathbf{u}^\prime,
+\end{aligned}
+\end{equation}
+where $\beta = 1/k_B T$, with $k_B$ being the Boltzmann constant and $T$ the temperature.  The free energy includes two terms. The first term is ideal-gas-like, containing both translational and orientational entropies of a spatially inhomogeneous and orientationally ordered gas of rodlike molecules. The kernal function $\omega(\mathbf{r},\mathbf{u};\mathbf{r}^\prime, \mathbf{u}^\prime)$ in the second term describes the interaction between two rods respectively having the coordinates $(\mathbf{r},\mathbf{u})$ and $(\mathbf{r}^\prime, \mathbf{u}^\prime)$. The two terms compete with each other as one prefers isotropic state and the other nematic state. Then the two terms in eqn(\ref{Fdef})can be rewritten as
+\begin{equation}
+\beta F_1=N\ln(\rho_0/Q)-\rho_0\int\rd\br\rd\bu W(\br,\bu)f(\br,\bu)
+\end{equation}
+and
+\begin{equation}
+\beta F_2=\frac{L^2\rho_0^2}{2}\int\rd\br\rd\bu\rd\bu'f(\br,\bu)|\bu\times\bu'|f(\br,\bu').
+\end{equation}
+
+\begin{figure*}[!t]\centering
+\includegraphics[width = 1.9\columnwidth]{eps/circle_energy.eps}
+\caption{Comtrast of free energy about O(circles),V(squares),W(right triangles) in circle confinements when we fixed $L^2\rho_0=6,8,10$. } \label{P2}
+\end{figure*}
+
+ In Fig. \ref{P2}, we present the free energy of O,V,W states with different $L^2\rho_0$. When $L^2\rho_0=6$, the three states have almost the same free energy of $\beta F_1$, but O has the lowest $\beta F_2$ and W has the highest $\beta F_2$. Consequently, O is the stale state at most $R/L$ area. Then with the growth of $L^2\rho_0$, rods in O state are more easy to overlap with each other which could cause high free energy of $\beta F_2$. When $L^2\rho_0=8$, the three stats share nearly the same value of free energy. Furthermore, when $L^2\rho_0=10$, rods in W could be staggered to reduce the energy of $\beta F_2$, which finally make it to be the most stable one.
+
+Then, for annular confinement, we focus on O$^\prime$,V$^\prime$ and W$^\prime$. In Fig. \ref{Q2}, O$^\prime$ shares almost the same value of energy with V$^\prime$, but that of W$^\prime$ changes a lot with the increase of $L^2\rho_0$. When $L^2\rho_0=8$, W$^\prime$ is metastable with higher value of both $\beta F_1$ and $\beta F_2$. As the similar arrangement with W, rods in W$^\prime$ could stagger with each other and take up less space. When $L^2\rho_0$ increase to 12, W$^\prime$ becomes the stable state with lower energy.
+
+
+
+\begin{figure*}[!t]\centering
+\includegraphics[width = 1.9\columnwidth]{eps/circle2_energy.eps}
+\caption{Comtrast of free energy about O$^\prime$(circles),V$^\prime$(squares),W$^\prime$(right triangles) in annular confinements when we fixed $L^2\rho_0=8,9.8,12$ and $R^\prime:R=0.2$. } \label{Q2}
+\end{figure*}
+
+
+
+
+\section{Model description}
+\subsection{Density}
+
+Firstly a propagator $q(\br,\bu;s)$ is introduced to describe the probability of finding a segment of length $s$ with its terminal end locating at $\br$ and pointing at unit vector $\bu$. We suppose that the external potential $W(\br,\bu)$ is known, then $q(\br,\bu;s)$ can be calculated by solving the modified diffusion equation(MDE)
+\be \label{q1}
+\frac{\partial}{\partial s}q(\br,\bu;s)=[-L\bu\cdot\nabla_\br-W(\br,\bu)]q(\br,\bu;s).
+\en
+The partition function $Q$ is obtained by
+\be \label{q2}
+Q=\int\rd\br\rd\bu q(\br,\bu;1).
+\en
+
+We mostly focus on $\rho(\br,\bu)$, which describes the density of rods locating at position $\br$ and pointing at $\bu$. It is normalized by$\int\rho(\br,\bu)\rd\br\rd\bu=N$, where $N$ is the number of rods in the system. In addition, $\rho(\br,\bu)$ is associated with the propagator by
+\be \label{q3}
+\rho(\br,\bu)=\frac{N}{Q}\int_0^1\rd s q(\br,\bu;s)q(\br,-\bu;1-s).
+\en
+It is obvious that the total number $N$ affects $\rho(\br,\bu)$ most. In order to make the density unified, it is desirable to normalize it by
+\be \label{q4}
+f(\br,\bu)=\rho(\br,\bu)/\rho_0,
+\en
+which satisfies $\int f(\br,\bu)\rd\br\rd\bu/A=1$. Here $\rho_0=N/A$ and $A$ is the spatial area of the system. In the following work, our presentation of the numerical work is based on $f(\br,\bu)$.
+
+\subsection{Self-consistent field theory(SCFT) }
+While it is rather difficult to model the sophisticated system as its rich and varied information, mean-field theory is well applied to summarize the universal behaviors. Field $W(\br,\bu)$ is introduced to describe the external potential acting on the chain locating at $\br$ and pointing at $\bu$. Then, for simplicity of presentation, the free energy basing on well-known Onsager model is depicted by
+\[
+\beta F=N\ln(N/Q)-\int\rd\br\rd\bu W(\br,\bu)\rho(\br,\bu)
+\]
+\be
++\frac{1}{2}\rd\br\rd\bu\rd\bu'\rho(\br,\bu)|\bu\times\bu'|\rho(\br,\bu').
+\en
+The minimization of the energy with respect to $\rho(\br,\bu)$ is $\delta (\beta F)/\delta\rho=0$, which combining with Eqn(\ref{q4}) derives
+\be \label{q5}
+W(\br,\bu)=\rho_0\int\rd\bu'|\bu\times\bu'|f(\br,\bu')
+\en
+
+To this end, the whole procedure of the SCFT is to update the system as follows:
+firstly give an initial guess for $W(\br,\bu)$ which allows us to calculate $q(\br,\bu;s)$ by solving eqn(\ref{q1}); then $Q$ and $f(\br,\bu)$ can be derived from eqn(\ref{q2}),(\ref{q3}) combining with eqn(\ref{q4}); nextly, we can get a new field $W(\br,\bu)$ through eqn(\ref{q5}) and update the system; duplicate the above approach until $W(\br,\bu)$ converges.
+
+\section{Numerical approach}
+We consider $N$ rods confined in a circle with the radius $R$. Set $\br$ to be $(r,\phi)\in [0,R]\times[0,2\pi]$ and $\bu$ to be $(\cos(\phi+\theta),\sin(\phi+\theta))$ with $\theta\in[0,2\pi]$. Due to the above steps of the SCFT, It is the important step to find the solution of the MDE, that is
+\begin{align}\label{MDE}
+\frac{\partial}{\partial s}q(r,\phi,\theta;s)=\left(-\frac{L}{r}\sin\theta\frac{\partial}{\partial \phi}+\frac{L}{r}\sin\theta\frac{\partial}{\partial \theta}\right. \nonumber\\
+\left.-\frac{L}{r}\cos\theta\frac{\partial}{\partial r}-W(r,\phi,\theta)\right)q(r,\phi,\theta),
+\end{align}
+
+For ease of calculation, we normalize variable $r$ and sign $r/L$ to be $\tilde{r}$. The parameter spaces for $\tilde{r}, \phi, \theta, s$ are divided into $N_{\tilde{r}}, N_\phi, N_\theta, N_s$ divisions respectively; the nodes are labeled by integers $i,j,k$ and $n$. The function $q(\tilde{r}_i,y_j,\theta_k;s_n)$ is then directly represented by $q^n_{i,j,k}$. In most calculation, we set $(N_{\tilde{r}},N_\phi,N_\theta,N_s)$ to $(50,60,60,500)$. The step sizes in $\tilde{r},\phi,\theta$ and $s$ are $h_1=R/(LN_{\tilde{r}}),h_2=2\pi/N_\phi,h_3=2\pi/N_\theta$ and $\tau=1/N_s$, respectively.
+
+Here we use the upwind scheme to calculate eqn(\ref{MDE}), and we write
+\begin{equation}
+q_{i,j,k}^{n+1}=q_{i,j,k}^n+H_1q_{i,j,k}^n+H_2q_{i,j,k}^n+H_3q_{i,j,k}^n-\tau W_{i,j,k}q_{i,j,k}^n
+\end{equation}
+where the operators $H_1,H_2,H_3$ yield
+\begin{align}
+H_1q_{i,j,k}^{n}&=
+\begin{cases}
+-\frac{\tau}{h_2}\frac{\sin\theta_k}{\tilde{r}_i}\left(q_{i,j,k}^{n}-q_{i,j-1,k}^{n}\right),\quad \sin\theta_k\geq0\\[1mm]
+-\frac{\tau}{h_2}\frac{\sin\theta_k}{\tilde{r}_i}\left(q_{i,j+1,k}^{n}-q_{i,j,k}^{n}\right),\quad \sin\theta_k<0\\
+\end{cases},\\
+H_2q_{i,j,k}^{n}&=
+\begin{cases}
+\frac{\tau}{h_3}\frac{\sin\theta_k}{\tilde{r}_i}\left(q_{i,j,k+1}^{n}-q_{i,j,k}^{n}\right),\quad \sin\theta_k\geq0\\[1mm]
+\frac{\tau}{h_3}\frac{\sin\theta_k}{\tilde{r}_i}\left(q_{i,j,k}^{n}-q_{i,j,k-1}^{n}\right),\quad \sin\theta_k<0\\
+\end{cases},\\
+H_3q_{i,j,k}^{n}&=
+\begin{cases}
+-\frac{\tau}{h_1}\cos\theta_k\left(q_{i,j,k}^{n}-q_{i-1,j,k}^{n}\right),\quad \cos\theta_k\geq0\\[1mm]
+-\frac{\tau}{h_1}\cos\theta_k\left(q_{i+1,j,k}^{n}-q_{i,j,k}^{n}\right),\quad \cos\theta_k<0\\
+\end{cases}.
+\end{align}
+To ensure the numerical stability of the upwind scheme, the division must satisfy the condition
+\begin{equation}
+\frac{\tau}{h_1}\left(\frac{1}{h_2}+\frac{1}{h_3}+1\right)\leq1.
+\end{equation}
+
+\section{Boundary conditions}
+
+\subsection{Circular confinement}
+For variable $\tilde{r}$, $\tilde{r}=0$ satisfies Neumann boundary as circle is centrally symmetric.
+\begin{align}
+\left.\frac{\partial q(\tilde{r},\phi,\theta;s)}{\partial \tilde{r}}\right|_{\tilde{r}=0}=0,\qquad\qquad\\
+\left.\frac{\partial q(\tilde{r},\phi,\theta;s)}{\partial \phi}\right|_{\tilde{r}=0}=\left.\frac{\partial q(\tilde{r},\phi,\theta;s)}{\partial \theta}\right|_{\tilde{r}=0}=0.
+\end{align}
+The above two equations equal to
+\begin{equation}
+\frac{\partial}{\partial s}q(0,\phi,\theta;s)=-W(0,\phi,\theta)q(0,\phi,\theta;s).
+\end{equation}
+Then for $\tilde{r}=R/L,\phi,\theta$, we require
+\begin{align}
+q(R/L,\phi,\theta;s)&=0\quad {\rm if}\,\cos\theta<0\,\,{\rm and}\,s\neq0,\label{R}\\
+q(\tilde{r},0,\theta;s)&=q(\tilde{r},2\pi,\theta;s)\quad \forall \tilde{r},\theta,s,\\
+q(\tilde{r},\phi,0;s)&=q(\tilde{r},\phi,2\pi;s)\quad \forall \tilde{r},\theta,s,
+\end{align}
+Eqn(\ref{R}) describes the presence of a hard wall in outer boundary and it is also self-evident that the boundary for variable $\phi,\theta$ satisfies periodicity.
+\subsection{Circular confinement with a core in the center.}
+We suppose that the radius of the core is $R^\prime$, then
+\begin{align}
+q(R^\prime/L,\phi,\theta;s)&=0\quad {\rm if}\,\cos\theta>0\,\,{\rm and}\,s\neq0,\label{R}\\
+q(R/L,\phi,\theta;s)&=0\quad {\rm if}\,\cos\theta<0\,\,{\rm and}\,s\neq0,\label{R}\\
+q(\tilde{r},0,\theta;s)&=q(\tilde{r},2\pi,\theta;s)\quad \forall \tilde{r},\theta,s,\\
+q(\tilde{r},\phi,0;s)&=q(\tilde{r},\phi,2\pi;s)\quad \forall \tilde{r},\theta,s,
+\end{align}
+
+
+\section{Visualization of the structures}
+Nextly, as the propagator $q(\br,\bu;s)$ can be calculated and the iterative method for the SCFT is acknowledged above, we can get the numerical solutions of the system by setting parameters $R/L$ and $L^2\rho_0$.
+
+We need to introduce a function
+\begin{equation}
+\phi(\tilde{r},\phi))=\int_0^{2\pi}f(\tilde{r},\phi)\theta)\rd\theta
+\end{equation}
+where $f(\br,\bu)$ is performed by integrating over the $\theta$ dependence to get a clear look of the whole density distribution as the system is inhomogeneous in most cases. For further analysis of the orientational order, we define the orientational order parameter tensor
+\begin{equation}  \label{Qdef}
+  \begin{split}
+    {\sf Q}(\tilde{r},\phi) &= {1\over 2} \left[\begin{array}{cc}
+      S(\tilde{r},\phi) & T(\tilde{r},\phi)\\
+      T(\tilde{r},\phi) & -S(\tilde{r},\phi)
+    \end{array}\right],\\
+  \end{split}
+\end{equation}
+where the two elements are
+\begin{align}
+S(\tilde{r},\phi)&=\frac{\int_0^{2\pi}\rd\theta\cos(2\phi+2\theta)f(\tilde{r},\phi,\theta)}{\phi(\tilde{r},\phi)},\\
+T(\tilde{r},\phi)&=\frac{\int_0^{2\pi}\rd\theta\sin(2\phi+2\theta)f(\tilde{r},\phi,\theta)}{\phi(\tilde{r},\phi)}.
+\end{align}
+Both of $S$ and $T$ characterize the ordering of the rodlike molecules, too. Then we define another order parameter
+\begin{equation}\label{lambda}
+\Lambda(\tilde{r},\phi)= \sqrt{S^2(\tilde{r},\phi)+T^2(\tilde{r},\phi)},
+\end{equation}
+which is positive eigenvalue of the Q-tensor. Specially, the location where $\Lambda=0$ is considered as defect point.
+
+
+\section{Monte Carlo}
+To search for the existence of the W,V,O,H,T,U states and their annuli counterparts, 2D Monte Carlo (MC) simulations were carried out. Each run contained $N$ rigid rods as molecular analogues confined to a 2D circular hard boundary. Each rod was a straight line with centre-of-mass coordinates $[x, y]$,  and an orientation angle $\theta$ from the x-axis. They had a length $L$ and zero thickness, as in a 2D space, two infinitesimally thin rods can already interact with each other by an excluded volume rule, or in this case an excluded area. Throughout the simulation rods were not permitted to overlap with each other nor the wall boundary.
+
+A typical MC attempt consists of a translational move and rotational move of a randomly selected molecule. These moves are realized by adding a coordinate shift within the range $[-\Delta, \Delta]$ (for the former) or am angular shift $[-\delta, \delta]$ (for the latter). Any moves that violate the excluded-area constraint and the boundary conditions are rejected. The magnitudes of $\Delta$ and $\delta$ are determined by trial and error to maintain acceptance rates close to $ 50-60\%$ \cite{Landau}, independently for the translational and rotational moves. An MC sweep (MCS) pertains to making $N$ MC attempts (one for each rod) described here. To speed up the simulation, the cell-index technique \cite{Landau} was incorporated in the algorithm. 
+
+On initialization, rods would be placed in the box without concerns of rod overlap and boundary crossing. Rods were evenly spaced, but their orientations would be arranged to mimic one of the aforementioned states. After initialization, rods would need to be uncrossed with each other before data taking could start. For densities of $\rho\sim[5,8]$ uncrossing typically took $[5\text{k},20\text{k}]$ MCSs. All the rod positions and angles would be saved to file periodically as ``snapshots''. After uncrossing, simulations would be run for 1M MCSs with snapshots taken every 1k.
+
+The $[L^2\rho_0,R/L]$ parameters used were the same as those listed in Figure \ref{P1}, along with secondary runs wherein $N$ was doubled to enhance stability. Annuli simulations were also done on these more dense versions. Unfortunately, only the T and H states showed any lasting stability. By calculating the order parameter $\Lambda$ across time, the O,V,W, and U states all showed clear and steady migrations to other values, after which they would stabalize at this value. The U state was particularly quick to change its configuration, taking only $\sim10 000$ MCSs. The other three had a more prolonged transformation, lasting  $\sim300 000$ MCSs to find new regions. The T and H states showed no significant deviation from initial $\Lambda$. Indeed, when viewing the final snapshots, each state ended in either the T or H state.
+
+
+%\renewcommand\refname{Notes and references}
+%\bibliography{Ref2}
+\bibliography{Yao_circle} %You need to replace "rsc" on this line with the name of your .bib file
+\bibliographystyle{rsc}
+%\begin{thebibliography}{99}
+%\end{thebibliography}
+%\bibliographystyle{rsc}
+%\bibliographystyle{unsrt}
+%theme:
+
+%	plain: sort alphabetically based on author, year and title.
+%	abbrv: abbreviation of plain style
+% 	unsrt: sort based on the order of citation
+
+%\onecolumngrid
+
+%\vfill
+%\newpage
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

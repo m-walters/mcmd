@@ -1,0 +1,13 @@
+#!/bin/bash
+for f in $(cat edges)
+do
+	sourceparam="params/edge.param"
+	outparam="params/edgeparams/edge_1_"$f".param"
+  cp $sourceparam $outparam
+	x=$(echo "$f - 0.5"|bc)
+	ncell=$(printf "%.0f" "$x")
+	echo $ncell $f
+  sed -i "5s/7.0/$f/" $outparam
+  sed -i "3s/7/$ncell/" $outparam
+  sed -i "4s/7/$ncell/" $outparam
+done

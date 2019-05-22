@@ -1,0 +1,7 @@
+#!/bin/bash
+path="/home/walterms/mcmd/output/edge_resets/"
+for f in  $(cat runnames) 
+do
+	sleep 1
+	sbatch --output=$path$f".log" sbatch_run $path$f "params/edgeparams/$f.param"
+done

@@ -1,0 +1,5 @@
+#!/bin/bash
+#SBATCH -t 33:59:00 # time, in paper it was 10 hrs
+#SBATCH --mem=1G # in mb
+#SBATCH --account=def-jeffchen
+./mcrod $1 $2
