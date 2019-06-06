@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH -t 00:09:00 # time 
+#SBATCH --mem=4G # in mb
+#SBATCH --account=rrg-jeffchen
+#SBATCH --output="/scratch/walterms/mcmd/output/xmelt/sbatchlogs/xmelt_test_ff.log"
+source ~/jupyter_py2/bin/activate
+procdir="/scratch/walterms/mcmd/output/xmelt/processed/"
+infile=$procdir"xmelt_test"
+ffdir="/scratch/walterms/mcmd/output/xmelt/feedforwards/"
+outfile=$ffdir"xmelt_test_ff"
+s=10
+b=200
+ss=2
+python -u feedforward.py --infile=$infile --outfile=$outfile -s $s -b $b --stepsize=$ss --ckpt="default_s"$s"_b"$b"_ss"$ss".ckpt"

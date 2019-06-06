@@ -1,0 +1,5 @@
+#!/bin/bash
+runname="mnist_lrg"
+slog="/home/walterms/project/walterms/mcmd/nn/tfrnn/records/"$runname".log"
+
+sbatch --output=$slog train_state $runname

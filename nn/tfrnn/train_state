@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -t 11:59:00 # time 
+#SBATCH --mem=8G # in mb
+#SBATCH --account=rrg-jeffchen
+source ~/jupyter_py2/bin/activate
+b=200
+earlystop=0
+nEpoch=200 # 200
+nRound=5 # 20
+epochEval=5 # 2
+eta=0.001
+keepprob=0.5
+runname=$1
+python -u state_rnn.py --eta $eta --keepprob $keepprob -e $nEpoch -r $nRound -b $b --epochEval=$epochEval --bSummaries 0 --bSaveCkpt 0 --bEarlyStop $earlystop --runname=$runname
+#python -u state_rnn.py -e 5 -b $b --bSummaries 0 --bSaveCkpt 1 --ckpt="default_b"$b".ckpt"

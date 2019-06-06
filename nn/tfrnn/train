@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH -t 00:40:00 # time 
+#SBATCH --mem=8G # in mb
+#SBATCH --account=rrg-jeffchen
+#SBATCH --output="/scratch/walterms/mcmd/output/xmelt/sbatchlogs/xmelt.log"
+source ~/jupyter_py2/bin/activate
+procdir="/scratch/walterms/mcmd/output/xmelt/processed/"
+trnfile=$procdir"xmelt"
+testfile=$procdir"xmelt_test"
+s=10
+b=200
+ss=2
+bearlystop=0
+python -u seq_rnn.py --trnfile=$trnfile --testfile=$testfile --trnfile_range="0-4" --output="mylog" -e 10 -s $s -b $b --bSummaries 0 --bSaveCkpt 1 --stepsize $ss --ckpt="default_s"$s"_b"$b"_ss"$ss".ckpt"
