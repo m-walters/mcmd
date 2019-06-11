@@ -32,15 +32,23 @@ def nematicdirector(Q):
     return Lam, alpha
 
 
-def quad_features(pca_data):
+def quad_features(pca_data,red_dims):
     # pca_data should be the nbr vector after the pca transformation
     # Let's have this function return feature 1 as f_1^2 +f_2^2
     # and feature 2 as f_3^2 + f_4^2
-    new_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]-2),dtype=float)
-    new_pca_data[:,0] = pca_data[:,0]
-    new_pca_data[:,1] = np.sqrt(np.square(pca_data[:,1]) + np.square(pca_data[:,2]))
-    new_pca_data[:,2] = np.sqrt(np.square(pca_data[:,3]) + np.square(pca_data[:,4]))
-    new_pca_data[:,3:] = pca_data[:,5:]
+    #
+    # red_dims are the dims to squash together in form [[0,1],[4,4]] etc.
+    new_pca_data = pca_data.copy()
+    for pair in red_dims:
+        new_pca_data[:,pair[0]] = np.sqrt(np.square(pca_data[:,pair[0]]) + np.square(pca_data[:,pair[1]]))
+        
+    todel = []
+    for pair in red_dims:
+        if pair[0] == pair[1]: continue
+        todel.append(pair[1])
+
+    new_pca_data = np.delete(new_pca_data,todel,axis=1)
+
     return new_pca_data    
     
 
@@ -86,7 +94,7 @@ def norm_angles(thetas,alpha):
     return thetas
 
 
-def winding_angles(thetas,alpha):
+def winding_angles(thetas_,alpha,pol=0):
     '''
     Given 1D array of angles, return their angles relative to alpha
     such that the polarity is closest to that of the angle previous to it
@@ -96,9 +104,12 @@ def winding_angles(thetas,alpha):
     region, say [(+/-) pi/4, (-/+) 3pi/4]
     There are two ideas that come to mind: a threshold method or averaging method
     for determining when to decide direction
+    
+    Returns corrected thetas that are with respect to alpha
     '''
-    thresh = 0.2
-    pol = 0
+    thetas = thetas_.copy()
+    nth = thetas.shape[0]
+#     thresh = pi/2.
     th0 = alpha
     dalpha = 0
     for ith, th in enumerate(thetas):
@@ -114,17 +125,43 @@ def winding_angles(thetas,alpha):
                 th += twopi
             else:
                 th += pi
-        dalpha = th - alpha
-        if (abs(dalpha) > thresh) and (pol==0):
+                
+#         dalpha = th - alpha
+#         if (abs(dalpha) > thresh) and (pol==0):
+        dalpha += th - alpha
+        if (ith > nth//4) and (pol==0):
             pol = np.sign(dalpha)
         
-#         print th, dalpha, pol
-        thetas[ith] = th
+        thetas[ith] = th - alpha
         th0 = th
-    return thetas - alpha
+
+    # Detect false rotations
+    if (0):
+        gap = 5
+        # Thetas are wrt alpha
+        for ith, th in enumerate(thetas):
+            if ith > gap:
+                iref = max(0,ith-gap)
+                dth = th - thetas[iref]
+                if dth > pi:
+                    # angles should be considered as returning
+                    # to earlier ref, not further away
+                    for isubth, subth in enumerate(thetas[iref+1:ith]):
+                        sub_dth = subth - thetas[iref]
+                        if sub_dth > pi/2:
+                            thetas[iref+1+isubth] = subth - pi
+                    thetas[ith] = th - pi
+                elif dth < -pi:
+                    for isubth, subth in enumerate(thetas[iref+1:ith]):
+                        sub_dth = subth - thetas[iref]
+                        if sub_dth < pi/2:
+                            thetas[iref+1+isubth] = subth + pi
+                    thetas[ith] = th + pi
+
+    return thetas
 
 
-def polar_cluster_sort(rods,alpha,nndist=0.):
+def polar_cluster_sort(rods_,alpha,nndist=0.):
     '''
     rod x,y coordinates must be relative to their probe center
     angular coordinates are in range [0,2pi]
@@ -141,20 +178,21 @@ def polar_cluster_sort(rods,alpha,nndist=0.):
     
     Returns rods with final dimension being th_jalpha
     '''
-    nrod = len(rods)
-    idxs = np.arange(nrod).reshape(nrod,1)
-    rods = np.append(idxs,rods,axis=1)
-    rods2 = rods.copy()
-    phi = np.arctan2(rods[:,2],rods[:,1])
+    rods = rods_.copy()
+    phi = np.angle(rods[:,0] + 1j*rods[:,1])
     phi = np.where(phi < 0., phi+twopi, phi)
     phi_jalpha = phi - alpha
     phi_jalpha = np.where(phi_jalpha < 0., phi_jalpha+twopi, phi_jalpha)
-    
     rods[:,-1] = phi_jalpha
     rods = rods[rods[:,-1].argsort()]
+
+    nrod = len(rods)
+    idxs = np.arange(nrod).reshape(nrod,1)
+    rods = np.append(idxs,rods,axis=1)    
+    rods2 = rods.copy()
     rods3 = rods.copy()
-    # rods2 is be sorted by dist from center
     # rods is sorted by phi_jalpha
+    # rods2 will be used for holding dists
     # rods3 is also sorted by phi_jalpha
     checked = []
     rod3cnt = 0
@@ -165,7 +203,6 @@ def polar_cluster_sort(rods,alpha,nndist=0.):
             checked.append(start)
             rods3[rod3cnt] = rod
             rod3cnt += 1
-#         end = min(start+5,nrod)
         cent = np.asarray([rod[1],rod[2]])
         dists = dist_from(cent,rods2[:,1:3])
         rods2[:,-1] = dists
@@ -178,7 +215,11 @@ def polar_cluster_sort(rods,alpha,nndist=0.):
             # See if it's close to our subject rod
             # and if it is further along phi
             dphi = rods[int(nbr[0]), -1] - rods[start,-1]
-            if (nbr[-1] < nndist) and (dphi > 0.):
+#             print nbr
+#             print rods[int(nbr[0])]
+#             print rod
+#             print dphi
+            if (nbr[-1] < nndist) and (dphi > 0.) and (dphi < pi/2):
                 checked.append(int(nbr[0]))
                 rods3[rod3cnt] = nbr
                 rod3cnt+=1
@@ -209,20 +250,20 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
     '''
     
     # Create probes
-    nprobe = nx**2
+    nprobe = probes.shape[0]
     
     block2 = block.copy()
     nrod = len(block)
     z = np.zeros((nrod,1))
     block2 = np.append(block2,z,axis=1)
     
-    features = np.zeros(shape=(nprobe,n_nbr)) if not (use_xyth) else np.zeros(shape=(nprobe,n_nbr*3))
+    nnbr_ft = 2
+    
+    features = np.zeros(shape=(nprobe,n_nbr)) if not (use_xyth) else np.zeros(shape=(nprobe,n_nbr*nnbr_ft))
     nbrs_full = np.empty(shape=(nprobe,n_nbr,4))
     nbrs = np.empty(shape=(n_nbr,4))
     alphas = np.zeros(shape=(nprobe))
     
-    nnbr_ft = 3
-
     for i,prob in enumerate(probes):
         cent = np.asarray([prob[0],prob[1]])
         dists = dist_from(cent,block2[:,:2])
@@ -232,8 +273,8 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
         nbrs = np.copy(block2[:n_nbr])
         
         # Convert coordinates, relative to center of mass
-#         com_x, com_y = np.mean(nbrs[:,0]), np.mean(nbrs[:,1])
-        com_x, com_y = prob[0], prob[1]
+        com_x, com_y = np.mean(nbrs[:,0]), np.mean(nbrs[:,1])
+#         com_x, com_y = prob[0], prob[1]
         nbrs[:,0] -= com_x
         nbrs[:,1] -= com_y
 
@@ -248,14 +289,13 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
         th_jalpha = th_j - alpha # [-2pi,2pi]
 
         if method == "random":
+            nbrs[:,-1] = cos(2.*th_jalpha)
+#             nbrs[:,-1] = cos(2.*th_j)
             np.random.shuffle(nbrs)
-            th_jalpha = th_j - alpha
             if use_xyth:
-                nbrs[:,-1] = cos(2.*th_jalpha)
                 features[i] = nbrs[:,:nnbr_ft].flatten()
             else:
-                features[i,:] = cos(2.*th_jalpha)
-                nbrs[:,-1] = features[i,:]
+                features[i,:] = nbrs[:,-1]
             
         if method == "radial":
             if use_xyth:
@@ -271,8 +311,8 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
             # Normalize rod angles first
             nbrs = polar_cluster_sort(nbrs,alpha,nndist=0.4)
             nbrs[:,-1] = winding_angles(nbrs[:,2],alpha) / pi
-            nbrs[:,-1] = np.square(nbrs[:,-1])
-#             nbrs[:,-1] = cos(2.*th_jalpha)
+#             nbrs[:,-1] = np.square(nbrs[:,-1])
+            nbrs[:,-1] = cos(2.*nbrs[:,-1])
 #             nbrs[:,-1] = (norm_angles(nbrs[:,2],alpha))
             nbrs = nbrs[nbrs[:,-1].argsort()]
             if use_xyth:
@@ -280,15 +320,30 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
             else:
                 features[i,:] = nbrs[:,-1]
             
-        if method == "polar":
-            nbrs = polar_cluster_sort(nbrs,alpha,nndist=0.4)
-#             features[i,:] = cos(2.*th_jalpha)
-#             features[i,:] = (norm_angles(nbrs[:,2],alpha) - alpha) / pi
-            nbrs[:,-1] = cos(2.* winding_angles(nbrs[:,2],alpha) )
+        if method == "WA":
+            nbrs = polar_cluster_sort(nbrs,alpha,nndist=0.)
+            nbrs[:,-1] = cos(2.* (nbrs[:,2] - alpha) )
             if use_xyth:
                 features[i] = nbrs[:,:nnbr_ft].flatten()
             else:
                 features[i,:] = nbrs[:,-1]
+
+        if method == "WD":
+            nbrs = polar_cluster_sort(nbrs,alpha,nndist=0.3)
+            nbrs[:,-1] = winding_angles(nbrs[:,2],alpha, pol=0)
+#             nbrs[:,-1] = nbrs[:,2] - alpha
+            c2 = cos(2. * nbrs[:,-1])
+            s2 = sin(2. * nbrs[:,-1])
+            
+#             phi = np.angle(nbrs[:,0] + 1j*nbrs[:,1])
+#             phi_jalpha = (phi - alpha)%twopi
+#             dc2 = (c2 - np.roll(c2,1)) / (phi_jalpha - np.roll(phi_jalpha,1))
+#             ds2 = (s2 - np.roll(s2,1)) / (phi_jalpha - np.roll(phi_jalpha,1))
+#             nbrs[:,-1] = sin( 2. * winding_angles(nbrs[:,2],alpha, pol=0))
+            if use_xyth:
+                features[i] = np.array([c2,s2]).flatten()
+            else:
+                features[i,:] = nbrs[:,-1] / pi
             
         # Return nbrs to original coords
         nbrs[:,0] += com_x
@@ -301,7 +356,13 @@ def get_lat_nbrs(block,n_nbr,edge,nx,probes,use_bulk=False,\
     else:
         return features
 
+
+def get_xyth_feature(nbrs):
+    c2 = cos(2.* nbrs[:,2])
+    s2 = sin(2.* nbrs[:,2])
+    return np.array([c2,s2]).flatten()
     
+   
     
 def plotLine(x1,y1,x2,y2,c='b',ax=None,lw=0.4,alpha=1.0):
     if ax: # given axis handle
@@ -309,7 +370,8 @@ def plotLine(x1,y1,x2,y2,c='b',ax=None,lw=0.4,alpha=1.0):
     else:
         plt.gca().plot([x1, x2], [y1, y2], color=c, linestyle='-', linewidth=lw, alpha=alpha);
         
-def plotrods(rods,myax,halfL=0.5,hotrods=[],col='k',lw=0.4,alpha=1.0,add_crosses=False):
+def plotrods(rods,myax,halfL=0.5,hotrods=[],col='k',lw=0.4,alpha=1.0,add_crosses=False,number=None):
+
     for r in rods:
         th = r[2]
         x1 = r[0] - halfL*cos(th)
@@ -319,7 +381,14 @@ def plotrods(rods,myax,halfL=0.5,hotrods=[],col='k',lw=0.4,alpha=1.0,add_crosses
         plotLine(x1,y1,x2,y2,c=col,lw=lw,ax=myax,alpha=alpha)
         if add_crosses:
             myax.plot(r[0],r[1],"+",markersize=20,color="grey",linewidth=5)
-        
+        elif number:
+            font = {'family': 'sans-serif',
+                'size': 13,
+                'usetex': False
+                }
+            myax.text(r[0],r[1],"%d"%(number),fontdict=font,fontsize=12,
+                     horizontalalignment="center",
+                     verticalalignment="center")
     if len(hotrods)>0:
         for r in hotrods:
             th = r[2]
